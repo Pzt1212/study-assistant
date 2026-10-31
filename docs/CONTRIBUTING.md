@@ -9,7 +9,7 @@
 
 ## 如何报告 Bug
 
-1. 先在 [Issues](https://github.com/your-username/study-assistant/issues) 中搜索是否已有相同问题。
+1. 先在 [Issues](https://github.com/Pzt1212/study-assistant/issues) 中搜索是否已有相同问题。
 2. 若无，新建 Issue，请包含：
    - 问题描述（发生了什么、期望是什么）
    - 复现步骤
@@ -22,7 +22,7 @@
 2. 克隆到本地并创建特性分支：
 
 ```bash
-git clone https://github.com/your-username/study-assistant.git
+git clone https://github.com/Pzt1212/study-assistant.git
 cd study-assistant
 git checkout -b feature/your-feature-name
 ```

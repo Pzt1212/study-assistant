@@ -4,6 +4,12 @@
 
 后端 Flask + SQLite，前端原生 HTML/CSS/JS（零 CDN 依赖），一条命令即可在本地跑起来。
 
+> **💡 下载与运行指南**
+> 本项目为纯开源的 Python Web 应用，GitHub 的 `Download ZIP` 只会下载源代码，**不包含直接双击运行的 .exe 文件**。
+> - **Windows 普通用户**：请下载源码解压，确保电脑装有 Python 3.8+，双击 `scripts\start.vbs` 即可在后台静默启动，然后浏览器访问 `http://127.0.0.1:5000`。
+> - **开发者**：请按照下方的 [安装步骤](#安装步骤) 进行环境配置。
+> - *(注：如果你在找打包好的 exe 单文件，本项目目前暂不提供。)*
+
 ## 界面预览
 
 | 仪表盘 | 番茄钟 |
@@ -61,7 +67,7 @@
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-username/study-assistant.git
+git clone https://github.com/Pzt1212/study-assistant.git
 cd study-assistant
 
 # 2. 创建虚拟环境（推荐）
