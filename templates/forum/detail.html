@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} - 论坛{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ post.title }}</h1>
+    <p class="muted">
+      {{ post.author_name or ('用户 #' ~ post.user_id) }} · {{ post.created_at }}
+    </p>
+  </div>
+  <div class="head-actions">
+    {% if post.user_id == current_user.id or current_user.is_admin %}
+    <form method="post" action="{{ url_for('forum.delete_post', post_id=post.id) }}"
+          class="inline-form" data-confirm="确定删除这篇帖子吗？">
+      <button class="btn btn-danger btn-sm" type="submit">删除</button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('forum.index') }}" class="btn btn-ghost">返回列表</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="pre-wrap forum-post-body">{{ post.content }}</div>
+</div>
+
+<section id="replies" style="margin-top:4px">
+  <div class="forum-replies-head">
+    <h2>回复（{{ replies|length }}）</h2>
+  </div>
+
+  <div class="card" style="padding:6px 20px">
+    {% for r in replies %}
+    <div class="forum-reply">
+      <div class="forum-reply-head">
+        <span class="cell-strong">{{ r.author_name or ('用户 #' ~ r.user_id) }}</span>
+        <span class="cell-muted">{{ r.created_at }}</span>
+        {% if r.user_id == current_user.id or current_user.is_admin %}
+        <form method="post" action="{{ url_for('forum.delete_reply', reply_id=r.id) }}"
+              class="inline-form" data-confirm="删除这条回复？">
+          <button class="btn btn-ghost btn-sm" type="submit">删除</button>
+        </form>
+        {% endif %}
+      </div>
+      <div class="pre-wrap forum-reply-body">{{ r.content }}</div>
+    </div>
+    {% else %}
+    <p class="muted" style="padding:12px 4px">还没有回复，来抢沙发～</p>
+    {% endfor %}
+  </div>
+
+  <div class="card" style="max-width:760px">
+    <form method="post" action="{{ url_for('forum.detail', post_id=post.id) }}" class="form-stack">
+      <div class="field">
+        <label for="content">回复内容</label>
+        <textarea id="content" name="content" rows="4" required placeholder="写下你的回复…"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">回复</button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

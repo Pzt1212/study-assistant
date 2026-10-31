@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}发布新帖 - 论坛{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>发布新帖</h1>
+    <p class="muted">写下你的问题或想分享的学习内容。</p>
+  </div>
+</div>
+
+<div class="card" style="max-width:760px">
+  <form method="post" action="{{ url_for('forum.new') }}" class="form-stack">
+    <div class="field">
+      <label for="title">标题</label>
+      <input type="text" id="title" name="title" required maxlength="80" value="{{ title }}" placeholder="一句话概括主题">
+    </div>
+    <div class="field">
+      <label for="content">内容</label>
+      <textarea id="content" name="content" rows="10" required placeholder="详细描述…（支持多行文本）">{{ content }}</textarea>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">发布</button>
+      <a href="{{ url_for('forum.index') }}" class="btn btn-ghost">取消</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

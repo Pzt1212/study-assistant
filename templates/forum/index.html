@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}论坛 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>学习论坛</h1>
+    <p class="muted">交流学习方法、提问答疑、分享笔记与心得。</p>
+  </div>
+  <div class="head-actions">
+    <form class="inline-search" method="get" action="{{ url_for('forum.index') }}">
+      <input type="search" name="q" placeholder="搜索帖子标题 / 内容" value="{{ keyword }}">
+      <button class="btn btn-ghost" type="submit">搜索</button>
+    </form>
+    <a href="{{ url_for('forum.new') }}" class="btn btn-primary">发帖</a>
+  </div>
+</div>
+
+{% if posts %}
+<div class="portal-grid">
+  {% for p in posts %}
+  <article class="portal-card">
+    <a href="{{ url_for('forum.detail', post_id=p.id) }}" class="portal-cover" style="text-decoration:none">
+      <span style="opacity:.85">{{ p.title[:1] }}</span>
+      <span class="cover-type">{{ p.reply_count }} 回复</span>
+    </a>
+    <div class="portal-body">
+      <div class="portal-title">
+        <a href="{{ url_for('forum.detail', post_id=p.id) }}">{{ p.title }}</a>
+      </div>
+      <div class="portal-excerpt">{{ p.content[:120] }}{% if p.content|length > 120 %}…{% endif %}</div>
+      <div class="portal-meta">
+        <span>{{ p.author_name or ('用户 #' ~ p.user_id) }}</span>
+        <span>{{ p.updated_at }}</span>
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>{{ '没有找到匹配的帖子。' if keyword else '还没有帖子，点击右上角「发帖」开始交流吧。' }}</p>
+</div>
+{% endif %}
+{% endblock %}
