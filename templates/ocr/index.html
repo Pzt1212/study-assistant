@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}文字识别 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>文字识别 (OCR)</h1>
+  <p class="muted">上传图片，自动识别其中的文字，可修正后保存为笔记。</p>
+</div>
+
+<!-- 上传表单（未识别或识别失败时显示） -->
+{% if not recognized_text %}
+<div class="card upload-card">
+  <form method="post" action="{{ url_for('ocr.index') }}" enctype="multipart/form-data"
+        class="form-stack">
+    <div class="field">
+      <label>识别模式</label>
+      <div class="ocr-mode-row">
+        <label class="ocr-mode-option">
+          <input type="radio" name="mode" value="printed"
+                 {% if index_mode != 'handwrite' %}checked{% endif %}>
+          <span class="ocr-mode-body">
+            <strong>印刷体</strong>
+            <span class="cell-muted">打印/屏幕文字 · 本地 Tesseract / 在线引擎</span>
+          </span>
+        </label>
+        <label class="ocr-mode-option">
+          <input type="radio" name="mode" value="handwrite"
+                 {% if index_mode == 'handwrite' %}checked{% endif %}>
+          <span class="ocr-mode-body">
+            <strong>手写体</strong>
+            <span class="cell-muted">
+              手写文字 · 优先本地插件 rapidocr
+              {% if handwriting_ok %}<span class="badge badge-green">插件可用</span>
+              {% else %}<span class="badge badge-red">插件未安装</span>{% endif %}
+            </span>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="image">选择图片</label>
+      <input type="file" id="image" name="image" required
+             accept=".png,.jpg,.jpeg,.gif,.bmp,.webp">
+    </div>
+    <button type="submit" class="btn btn-primary">识别文字</button>
+  </form>
+
+  <div class="form-help ocr-help">
+    <p><strong>关于 OCR 引擎：</strong></p>
+    <p><strong>印刷体：</strong>默认使用本地 <code>pytesseract + Tesseract-OCR</code>（免费开源）。
+       Tesseract 建议放在项目 <code>bin/tesseract/</code> 目录（运行
+       <code>python tools/setup_tesseract.py</code> 可联网自动下载），开箱即用。</p>
+    <p><strong>手写体：</strong>默认使用本地插件 <code>rapidocr-onnxruntime</code>
+       （离线可用、无需 API Key）。若提示插件不可用，执行
+       <code>pip install -r requirements-handwriting.txt</code> 即可；在插件缺失时，
+       系统会尝试用本地 Tesseract（提高识别参数）降级识别。</p>
+    <p>也可在 <code>config.py</code> 中配置 <code>OCR_PROVIDER = "ocrspace"/"baidu"</code>
+       使用在线 OCR 服务。</p>
+  </div>
+</div>
+{% else %}
+
+<!-- 识别结果：原图 + 可编辑文本 -->
+<div class="ocr-result-layout">
+  <div class="card ocr-image-card">
+    <h3>原图
+      <span class="badge badge-primary" style="margin-left:6px">
+        {{ '手写体识别' if ocr_mode == 'handwrite' else '印刷体识别' }}
+      </span>
+    </h3>
+    <img src="{{ url_for('notes.serve_upload', filename=preview) }}" alt="待识别的图片" class="ocr-preview">
+  </div>
+
+  <div class="card ocr-text-card">
+    <h3>识别结果（可编辑修正）</h3>
+    <form method="post" action="{{ url_for('ocr.save') }}" class="form-stack">
+      <div class="field">
+        <label for="title">笔记标题</label>
+        <input type="text" id="title" name="title" value="OCR 识别笔记" placeholder="笔记标题">
+      </div>
+      <div class="field">
+        <label for="content">识别文本</label>
+        <textarea id="content" name="content" rows="14">{{ recognized_text }}</textarea>
+      </div>
+      <input type="hidden" name="stored" value="{{ preview }}">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">保存为笔记</button>
+        <a href="{{ url_for('ocr.index') }}" class="btn btn-ghost">重新识别</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
