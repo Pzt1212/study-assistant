@@ -1,0 +1,31 @@
+# ============================================================
+# 学习助手 - 命名隧道配置（模板，用于固定域名 / *.trycloudflare.com 直连）
+#
+# 使用前提（仅首次需要）：
+#   1) 完成授权：cloudflared tunnel login
+#       （浏览器登录 Cloudflare 并授权，生成 ~/.cloudflared/cert.pem）
+#   2) 创建隧道：cloudflared tunnel create study-assistant
+#       （会在 ~/.cloudflared/ 生成 <隧道UUID>.json 凭据）
+#   3) 本文件中的 {TUNNEL_UUID} 由 tunnel_start.bat 自动从上述 JSON 读取替换，
+#      无需手动填写；也可手动替换为真实 UUID。
+#
+# 安全：不要在本文件写入任何 Token / 凭据内容。
+# ============================================================
+
+# 隧道名称与凭据 UUID（保持与 `cloudflared tunnel list` 输出一致）
+tunnel: study-assistant
+credentials-file: %USERPROFILE%\.cloudflared\{TUNNEL_UUID}.json
+
+# 入口：无需账号的随机临时域名（重启变化）
+# ingress:
+#   - hostname: YOUR_SUBDOMAIN.trycloudflare.com
+#     service: http://127.0.0.1:5000
+#   - service: http_status:404
+
+# ============ 自定义域名模式（二选一，推荐） ============
+# 用你的域名替换 study.example.com（需已托管到 Cloudflare 账户），
+# 并先执行 DNS 路由：cloudflared tunnel route dns study-assistant study.example.com
+# ingress:
+#   - hostname: study.example.com
+#     service: http://127.0.0.1:5000
+#   - service: http_status:404

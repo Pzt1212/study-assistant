@@ -1,0 +1,13 @@
+# ============================================================
+# 学习助手 - Quick Tunnel 参考配置（免登录临时域名）
+# 用法：cloudflared tunnel --config tunnel\config-quick.yml run
+# 或直接执行项目根目录 tunnel_start.bat
+# 说明：Quick Tunnel 无需 Cloudflare 账号，每次启动会分配新的
+#       *.trycloudflare.com 临时域名（重启后变化，属正常现象）
+# ============================================================
+
+# 隧道入口 URL（本机服务地址）
+url: http://127.0.0.1:5000
+
+# 无需账号即可使用的快速隧道
+no-autoupdate: true
