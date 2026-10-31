@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+{% from "_icons.html" import ic %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{% block title %}学习助手{% endblock %}</title>
+  {# 防闪烁：CSS 加载前先应用已保存的主题 #}
+  <script>
+    (function () {
+      try {
+        var s = JSON.parse(localStorage.getItem("sa_ui_settings_v1") || "null");
+        var theme = (s && typeof s === "object" && typeof s.theme === "string" && s.theme !== "custom") ? s.theme : "minimal";
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "minimal");
+      }
+    })();
+  </script>
+  {# Inter 字体（离线自动回退系统字体） #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  {# 移动端适配层：仅在窄屏/触控设备生效，桌面端表现不变（见 static/css/mobile.css） #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{# 内嵌 App（Android WebView）环境标记：由原生层注入 WebView UA 关键字识别，
+   仅用于启用安全区留白等适配，不影响桌面浏览器与普通手机浏览器访问。 #}
+<script>
+  (function () {
+    try {
+      if (/StudyAssistantApp/i.test(navigator.userAgent)) {
+        document.body.classList.add("sa-native-app");
+        document.documentElement.classList.add("sa-native-app");
+      }
+    } catch (e) { /* 忽略：标记失败不影响功能 */ }
+  })();
+</script>
+{% set ep = request.endpoint or '' %}
+{% set grp = ep.split('.')[0] %}
+{% if current_user.is_authenticated %}
+{# ================= 登录态：应用壳（左侧栏 + 内容） ================= #}
+<div class="side-backdrop" id="sideBackdrop"></div>
+<aside class="app-side" id="appSide">
+  <div class="side-brand">
+    <a href="{{ url_for('main.dashboard') }}" class="brand">学习助手</a>
+  </div>
+  <form class="side-search" action="{{ url_for('search.index') }}" method="get">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+    <input type="search" name="q" placeholder="搜索笔记 / 题目…" value="{{ request.args.get('q','') }}" aria-label="搜索">
+  </form>
+  <nav class="side-nav">
+    <div class="side-group">工作区</div>
+    <a class="side-link {% if grp == 'main' %}is-active{% endif %}" href="{{ url_for('main.dashboard') }}"><span class="side-ic">{{ ic('home', 17) }}</span><span class="side-txt">首页</span></a>
+    <a class="side-link {% if grp == 'forum' %}is-active{% endif %}" href="{{ url_for('forum.index') }}"><span class="side-ic">{{ ic('forum', 17) }}</span><span class="side-txt">论坛</span></a>
+    <div class="side-group">专注</div>
+    <a class="side-link {% if grp == 'pomodoro' %}is-active{% endif %}" href="{{ url_for('pomodoro.index') }}"><span class="side-ic">{{ ic('pomodoro', 17) }}</span><span class="side-txt">番茄钟</span></a>
+    <a class="side-link {% if grp == 'timer' %}is-active{% endif %}" href="{{ url_for('timer.index') }}"><span class="side-ic">{{ ic('timer', 17) }}</span><span class="side-txt">计时器</span></a>
+    <a class="side-link {% if grp == 'music' %}is-active{% endif %}" href="{{ url_for('music.index') }}"><span class="side-ic">{{ ic('music', 17) }}</span><span class="side-txt">音乐</span></a>
+    <div class="side-group">内容</div>
+    <a class="side-link {% if grp == 'video' %}is-active{% endif %}" href="{{ url_for('video.index') }}"><span class="side-ic">{{ ic('video', 17) }}</span><span class="side-txt">视频</span></a>
+    <a class="side-link {% if grp == 'media' %}is-active{% endif %}" href="{{ url_for('media.index') }}"><span class="side-ic">{{ ic('file', 17) }}</span><span class="side-txt">媒体库</span></a>
+    <a class="side-link {% if grp == 'questions' %}is-active{% endif %}" href="{{ url_for('questions.index') }}"><span class="side-ic">{{ ic('quiz', 17) }}</span><span class="side-txt">题库</span></a>
+    <a class="side-link {% if grp == 'question_bank' %}is-active{% endif %}" href="{{ url_for('question_bank.index') }}"><span class="side-ic">{{ ic('bank', 17) }}</span><span class="side-txt">在线题库</span></a>
+    <a class="side-link {% if grp == 'notes' %}is-active{% endif %}" href="{{ url_for('notes.index') }}"><span class="side-ic">{{ ic('file', 17) }}</span><span class="side-txt">笔记</span></a>
+    <a class="side-link {% if grp == 'ocr' %}is-active{% endif %}" href="{{ url_for('ocr.index') }}"><span class="side-ic">{{ ic('ocr', 17) }}</span><span class="side-txt">文字识别</span></a>
+    {% if current_user.is_admin %}
+    <div class="side-group">系统</div>
+    <a class="side-link {% if grp == 'admin' %}is-active{% endif %}" href="{{ url_for('admin.index') }}"><span class="side-ic">{{ ic('gear', 17) }}</span><span class="side-txt">管理后台</span></a>
+    {% endif %}
+  </nav>
+  <div class="side-foot">
+    <div class="side-user">
+      {{ avatar_html(current_user, 30) }}
+      <div class="side-user-info">
+        <span class="side-user-name">{{ current_user.username }}{% if current_user.role >= 1 %}<em> · {{ role_label(current_user.role) }}</em>{% endif %}</span>
+      </div>
+      <button type="button" class="side-setting" id="btn-settings" title="主题 · 文字 · 头像" aria-label="打开设置">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <form method="post" action="{{ url_for('auth.logout') }}" class="logout-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="side-logout">退出登录</button>
+    </form>
+  </div>
+</aside>
+{% endif %}
+
+{# ========== 主容器：登录=壳内 / 未登录=独立页 ========== #}
+<div class="{% if current_user.is_authenticated %}app-main{% else %}anon-wrap{% endif %}">
+  {% if current_user.is_authenticated %}
+  <header class="app-topbar">
+    <button type="button" class="side-hamburger" id="sideMenuBtn" aria-label="打开菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topbar-title">{% block crumb %}
+      {%- if grp == 'main' %}首页
+      {%- elif grp == 'pomodoro' %}番茄钟
+      {%- elif grp == 'timer' %}计时器
+      {%- elif grp == 'music' %}音乐
+      {%- elif grp == 'video' %}视频
+      {%- elif grp == 'media' %}媒体库
+      {%- elif grp == 'questions' %}题库
+      {%- elif grp == 'question_bank' %}在线题库
+      {%- elif grp == 'notes' %}笔记
+      {%- elif grp == 'ocr' %}文字识别
+      {%- elif grp == 'forum' %}论坛
+      {%- elif grp == 'search' %}搜索
+      {%- elif grp == 'admin' %}管理后台
+      {%- else %}学习助手{% endif -%}
+    {% endblock %}</div>
+  </header>
+  {% endif %}
+
+  {% if current_user.is_authenticated %}
+  <main class="app-content">
+  {% else %}
+  <header class="navbar"><div class="container navbar-inner">
+    <a href="{{ url_for('main.dashboard') }}" class="brand">学习助手</a>
+    <div class="user-box" style="margin-left:auto">
+      <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">登录</a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">注册</a>
+    </div>
+  </div></header>
+  <main class="container main">
+  {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  {% if current_user.is_authenticated %}
+  <footer class="footer"><p>学习助手 · 开源 MIT License · 专注、记录、成长</p></footer>
+  {% endif %}
+</div>
+
+{# ================= 设置抽屉（登录态） ================= #}
+{% if current_user.is_authenticated %}
+<div class="settings-backdrop" id="settings-backdrop"></div>
+<aside class="settings-drawer" id="settings-drawer" role="dialog" aria-modal="true" aria-label="设置">
+  <div class="settings-head">
+    <h2>设置</h2>
+    <button type="button" class="settings-close" id="settings-close" aria-label="关闭设置">&#10005;</button>
+  </div>
+  <div class="settings-body">
+    <section class="settings-group">
+      <div class="settings-group-title">自定义头像</div>
+      <div class="avatar-setup">
+        <div class="avatar-preview" id="avatar-preview">{{ avatar_html(current_user, 56) }}</div>
+        <div class="avatar-actions">
+          <label class="btn btn-ghost btn-sm" for="avatar-file" style="cursor:pointer">上传图片</label>
+          <input type="file" id="avatar-file" accept="image/*" hidden>
+          <button type="button" class="btn btn-ghost btn-sm" id="avatar-remove">移除头像</button>
+        </div>
+        <p class="form-help" style="margin-top:8px">支持本地上传（自动压缩为小图）或从下方选择字母头像底色。</p>
+        <div class="avatar-emoji-pick" id="avatar-emoji-pick"></div>
+      </div>
+    </section>
+    <section class="settings-group">
+      <div class="settings-group-title">主题</div>
+      <div class="theme-presets" id="theme-presets">
+        <button type="button" class="theme-preset" data-preset="minimal">
+          <span class="swatches"><span class="sw" style="background:#f7f7f5"></span><span class="sw" style="background:#ffffff"></span><span class="sw" style="background:#22262b"></span><span class="sw" style="background:#2f6feb"></span></span>
+          <span class="name">极简白</span><span class="sub">清爽 · 默认</span>
+        </button>
+        <button type="button" class="theme-preset" data-preset="dark">
+          <span class="swatches"><span class="sw" style="background:#16171a"></span><span class="sw" style="background:#1f2125"></span><span class="sw" style="background:#e8eaee"></span><span class="sw" style="background:#7aa2f7"></span></span>
+          <span class="name">暗夜黑</span><span class="sub">低光护眼</span>
+        </button>
+        <button type="button" class="theme-preset" data-preset="forest">
+          <span class="swatches"><span class="sw" style="background:#f3f5f0"></span><span class="sw" style="background:#ffffff"></span><span class="sw" style="background:#36593c"></span><span class="sw" style="background:#33664a"></span></span>
+          <span class="name">森林绿</span><span class="sub">自然沉静</span>
+        </button>
+      </div>
+      <p class="form-help" style="margin-top:10px">选择整套配色；颜色即时生效并自动记住。</p>
+    </section>
+    <section class="settings-group">
+      <div class="settings-group-title">文字设置</div>
+      <div class="text-row">
+        <div class="text-label"><label for="set-font">字体</label></div>
+        <select id="set-font">
+          <option value="inter">Inter（默认无衬线）</option>
+          <option value="system">系统字体</option>
+          <option value="serif">衬线（阅读感）</option>
+          <option value="mono">等宽（代码感）</option>
+        </select>
+      </div>
+      <div class="text-row">
+        <div class="text-label"><label for="set-size">字体大小</label><span class="value" id="val-size">15 px</span></div>
+        <input type="range" id="set-size" min="14" max="20" step="1" value="15">
+      </div>
+      <div class="text-row">
+        <div class="text-label"><label for="set-lh">行高</label><span class="value" id="val-lh">1.65</span></div>
+        <input type="range" id="set-lh" min="1.5" max="2.0" step="0.05" value="1.65">
+      </div>
+      <div class="type-sample" aria-hidden="true">
+        <div class="t1">示例文字：为学日益</div>
+        <div class="t2">读书使人充实，讨论使人机智，笔记使人准确。改动即时生效。</div>
+      </div>
+      <div class="settings-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="reset-all">恢复全部默认</button>
+      </div>
+    </section>
+  </div>
+</aside>
+{% endif %}
+
+<script>
+  window.SA_AVATAR = {{ (current_user.avatar if current_user.is_authenticated else none) | tojson }};
+  window.SA_ME = {{ ({ 'name': current_user.username } if current_user.is_authenticated else {}) | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/csrf.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script src="{{ url_for('static', filename='js/video.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

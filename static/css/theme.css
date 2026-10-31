@@ -1,0 +1,274 @@
+/* ============================================================
+   学习助手 - 主题 / 文字设置（theme.css）
+   - 3 套预设主题：极简白 / 暗夜黑 / 森林绿
+   - 预设主题 = 在 html[data-theme=...] 上覆盖 --bg / --surface /
+     --text / --accent / --link 等变量；派生色(--muted/--border/
+     --accent-soft)由 CSS color-mix 自动从主色生成
+   - 用户自定义通过 settings.js 写内联变量（优先级最高）
+   - 文字设置作用于 --fs / --lh / --font，正文组件继承
+   ============================================================ */
+
+/* ---------- 预设主题 ---------- */
+
+/* 极简白：暖灰背景、黑主钮、克制蓝链接 */
+html[data-theme="minimal"] {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1d1f23;
+  --accent: #22262b;
+  --accent-fg: #ffffff;
+  --link: #2f6feb;
+}
+
+/* 暗夜黑：深炭背景，高对比，淡蓝链接 */
+html[data-theme="dark"] {
+  --bg: #16171a;
+  --surface: #1f2125;
+  --surface-2: #2a2d33;
+  --text: #e8eaee;
+  --accent: #e8eaee;
+  --accent-fg: #16171a;
+  --link: #7aa2f7;
+  /* 语义色改用亮色系，保证无底色徽章/文字在暗背景可读 */
+  --color-success: #82cf9e;
+  --color-danger: #f2a09b;
+  --color-warning: #e9c46f;
+  --color-success-soft: rgba(130, 207, 158, 0.12);
+  --color-danger-soft: rgba(242, 160, 155, 0.12);
+  --color-warning-soft: rgba(233, 196, 111, 0.12);
+}
+
+/* 森林绿：米绿背景、墨绿主钮、松绿链接 */
+html[data-theme="forest"] {
+  --bg: #f3f5f0;
+  --surface: #ffffff;
+  --text: #20261f;
+  --accent: #36593c;
+  --accent-fg: #f4f7f3;
+  --link: #33664a;
+}
+
+/* 派生色：随主题与自定义自动变化（勿直接覆写这几个） */
+:root,
+html[data-theme="minimal"],
+html[data-theme="dark"],
+html[data-theme="forest"] {
+  --muted: color-mix(in srgb, var(--text) 55%, var(--bg));
+  --border: color-mix(in srgb, var(--text) 13%, var(--bg));
+  --surface-2: color-mix(in srgb, var(--text) 6%, var(--surface));
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  --shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
+  --shadow-pop: 0 10px 32px color-mix(in srgb, var(--text) 16%, transparent),
+                0 2px 8px color-mix(in srgb, var(--text) 9%, transparent);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--accent);
+  --color-primary-dark: var(--accent);
+  --color-primary-soft: var(--accent-soft);
+}
+
+/* ============================================================
+   文字控制生效域
+   （字号/行高由 settings.js 覆盖 --fs / --lh / --font）
+   ============================================================ */
+body {
+  font-family: var(--font);
+  font-size: var(--fs);
+  line-height: var(--lh);
+}
+
+/* 主要阅读文本区跟随字体大小设置 */
+.note-detail .note-content,
+.question-content,
+.quiz-question,
+.dash-main .card,
+.note-card,
+.stat-card,
+.card p,
+.table td,
+.playlist-item { font-size: var(--fs); line-height: var(--lh); }
+
+/* 小屏字距 */
+@media (max-width: 720px) {
+  .navbar-inner { padding-top: 4px; padding-bottom: 4px; }
+}
+
+/* ============================================================
+   设置抽屉（设置页入口 → 全站设置面板）
+   ============================================================ */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--text) 32%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, visibility 0.18s;
+  z-index: 200;
+}
+.settings-backdrop.is-open { opacity: 1; visibility: visible; }
+
+.settings-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(400px, 92vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-pop);
+  transform: translateX(102%);
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 210;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.settings-drawer.is-open { transform: translateX(0); }
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.settings-head h2 { font-size: 15px; font-weight: 600; }
+.settings-close {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+}
+.settings-close:hover { background: var(--surface-2); color: var(--text); }
+
+.settings-body { padding: 6px 18px 30px; }
+
+.settings-group { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.settings-group:last-child { border-bottom: none; }
+.settings-group-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 12px; }
+
+/* 预设主题卡片 */
+.theme-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.theme-preset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s;
+  font-family: inherit;
+}
+.theme-preset:hover { border-color: color-mix(in srgb, var(--text) 40%, var(--border)); }
+.theme-preset.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.theme-preset .swatches { display: flex; gap: 3px; margin-bottom: 7px; }
+.theme-preset .sw { flex: 1; height: 18px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.06); }
+.theme-preset .name { font-size: 12px; color: var(--text); font-weight: 500; }
+.theme-preset .sub { font-size: 11px; color: var(--muted); display: block; margin-top: 1px; }
+
+/* 头像设置面板 */
+.avatar-setup { display: flex; flex-direction: column; gap: 10px; }
+.avatar-preview { display: flex; align-items: center; gap: 14px; }
+.avatar-preview .user-avatar {
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.avatar-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.avatar-emoji-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.avatar-emoji-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.12s, background 0.12s;
+}
+.avatar-emoji-btn:hover {
+  border-color: var(--link);
+  background: color-mix(in srgb, var(--link) 6%, var(--surface));
+}
+.setting-tip {
+  font-size: 12.5px;
+  color: var(--color-success);
+  min-height: 16px;
+}
+
+/* 文字设置 */
+.text-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 13px; }
+.text-row .text-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--text);
+}
+.text-row .text-label .value { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.text-row input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.text-row select {
+  padding: 6px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+}
+
+/* 示例文本 */
+.type-sample {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  color: var(--text);
+}
+.type-sample .t1 { font-weight: 600; margin-bottom: 4px; }
+.type-sample .t2 { color: var(--muted); }
+
+/* 操作按钮行 */
+.settings-actions { display: flex; gap: 8px; margin-top: 14px; }
+
+/* 让 icon 按钮可点击区域的 hover 有反馈 */
+.icon-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+.icon-btn:hover { color: var(--text); border-color: color-mix(in srgb, var(--text) 26%, var(--border)); background: var(--surface-2); }
+.icon-btn svg { width: 16px; height: 16px; }

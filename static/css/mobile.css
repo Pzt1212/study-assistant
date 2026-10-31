@@ -1,0 +1,199 @@
+/* ==========================================================================
+   学习助手 · 移动端适配层（Android / 小屏 WebView）
+   --------------------------------------------------------------------------
+   设计原则：**纯增量**。
+   - 不改动 style.css / theme.css 的任何既有规则；
+   - 只在「窄屏」与「触控设备」条件下追加覆盖，桌面端表现完全不变；
+   - 全部使用现有 CSS 变量（见 theme.css），自然继承用户所选主题。
+
+   作用范围：仅在 max-width: 900px 或 coarse pointer 时生效。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 安全区（刘海屏 / 手势导航条）
+   -------------------------------------------------------------------------- */
+:root {
+  --sa-safe-top: env(safe-area-inset-top, 0px);
+  --sa-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --sa-safe-left: env(safe-area-inset-left, 0px);
+  --sa-safe-right: env(safe-area-inset-right, 0px);
+}
+
+@media (max-width: 900px) {
+  body {
+    /* 配合 WebView 的 adjustResize，避免输入法顶起时内容被裁切 */
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  /* 底部留出导航条安全区，防止最后一个按钮被系统手势条盖住 */
+  body > main,
+  body > .container,
+  .sa-main {
+    padding-bottom: calc(16px + var(--sa-safe-bottom)) !important;
+  }
+
+  /* ----------------------------------------------------------------------
+     2. 触控目标放大：所有可点击元素至少 44x44（Apple HIG / Material 规范）
+     ---------------------------------------------------------------------- */
+  a,
+  button,
+  input[type="submit"],
+  input[type="button"],
+  .btn,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* 仅对「按钮类」强制最小高度，避免误伤正文里的行内链接 */
+  button,
+  .btn,
+  input[type="submit"],
+  input[type="button"],
+  select {
+    min-height: 44px;
+  }
+
+  /* ----------------------------------------------------------------------
+     3. 表单控件：移动端字号必须 >= 16px，否则 iOS/Android 会自动放大页面
+     ---------------------------------------------------------------------- */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    max-width: 100%;
+  }
+
+  textarea {
+    min-height: 120px;
+  }
+
+  /* ----------------------------------------------------------------------
+     4. 布局塌陷：多列网格在小屏改为单列
+     ---------------------------------------------------------------------- */
+  .sa-grid,
+  .grid,
+  .row {
+    grid-template-columns: 1fr !important;
+    display: block;
+  }
+
+  /* 卡片类容器铺满宽度，去掉桌面端的大边距 */
+  .card,
+  .sa-card,
+  .panel {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 12px;
+  }
+
+  /* ----------------------------------------------------------------------
+     5. 表格：小屏横向滚动，避免撑破视口
+     ---------------------------------------------------------------------- */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ----------------------------------------------------------------------
+     6. 手写 Canvas：确保可滚动区域不会拦截绘图手势
+     ---------------------------------------------------------------------- */
+  canvas {
+    touch-action: none;
+    max-width: 100%;
+  }
+
+  /* ----------------------------------------------------------------------
+     7. 长内容防溢出（题目解析、笔记正文里常有长公式/长链接）
+     ---------------------------------------------------------------------- */
+  p,
+  li,
+  td,
+  .note-content,
+  .question-stem {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* ----------------------------------------------------------------------
+     8. 顶部导航：窄屏下可横向滑动，而不是换行挤成两行
+     ---------------------------------------------------------------------- */
+  nav,
+  .navbar,
+  .sa-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  nav::-webkit-scrollbar,
+  .navbar::-webkit-scrollbar,
+  .sa-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ----------------------------------------------------------------------
+     9. 弹窗 / 抽屉：移动端改为全屏，避免小屏被键盘挤压
+     ---------------------------------------------------------------------- */
+  .modal,
+  .dialog {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* ----------------------------------------------------------------------
+     10. 隐藏桌面端专用元素（如依赖 hover 的悬浮操作栏）
+     ---------------------------------------------------------------------- */
+  .hover-only,
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. 触控设备补充规则（平板 / 手机横屏也可能超过 900px）
+   -------------------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse) {
+  /* 触控设备没有 hover，去除依赖 hover 才显示的交互提示 */
+  .hover-reveal {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. WebView 环境下隐藏网页滚动条（由原生层统一管理滚动观感）
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. 横屏（番茄钟 / 视频播放场景）
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) and (orientation: landscape) {
+  .sa-hero,
+  .hero {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   14. 内嵌 App 时的额外留白修正
+   -------------------------------------------------------------------------- */
+body.sa-native-app .sa-main {
+  padding-left: calc(10px + var(--sa-safe-left)) !important;
+  padding-right: calc(10px + var(--sa-safe-right)) !important;
+}
