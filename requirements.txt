@@ -1,0 +1,26 @@
+# ============================================================
+# 学习助手 (Study Assistant) - 运行时依赖
+# 安装方式：pip install -r requirements.txt
+# ============================================================
+# 核心 Web 框架
+Flask>=3.0,<4.0
+Flask-Login>=0.6.3
+bcrypt>=4.1.0
+
+# 图片处理与本地 OCR（印刷体：pytesseract + 系统/内置 Tesseract 引擎）
+Pillow>=10.0.0
+pytesseract>=0.3.10
+
+# 在线 API（在线 OCR / 在线曲目源探活等）
+requests>=2.31.0
+
+# ============================================================
+# 可选增强（不阻塞安装，按需单独安装）：
+#   1) 手写体本地 OCR 插件（离线运行，无需 API Key）：
+#        pip install -r requirements-handwriting.txt
+#      注：该包体积较大（含 ONNX 推理引擎），默认不随主依赖安装。
+#   2) Tesseract 引擎二进制：推荐放入项目目录 bin/tesseract/
+#      （见 tools/setup_tesseract.py，支持联网自动下载安装）
+#   3) 视频媒体库直连传输（R2 直传分块 / 异步云端备份，见 blueprints/media.py）：
+#        pip install -r requirements-media.txt
+# ============================================================

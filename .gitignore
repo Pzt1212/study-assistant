@@ -1,0 +1,114 @@
+# ============================================================
+# 学习助手 .gitignore — 忽略不应提交到版本库的文件
+# ============================================================
+
+# Python 字节码 / 缓存目录
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# 虚拟环境
+.virtualenvs/
+.venv/
+venv/
+env/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 日志文件与日志目录
+*.log
+logs/
+
+# 内置 Tesseract 引擎（体积大，可运行 tools/setup_tesseract.py 联网下载；不纳入版本库）
+bin/tesseract/
+bin/
+!bin/.gitkeep
+
+# OCR 语言包（体积大，运行 tools/setup_tesseract.py 获取）
+tessdata/
+
+# pip 沙箱残留临时目录（安装包时产生，可安全手动删除）
+.piptmp/
+pip-build-tracker-*/
+pip-ephem-wheel-cache-*/
+pip-install-*/
+pip-unpack-*/
+
+# Cloudflare Tunnel 运行产物（可执行文件/日志/激活配置不入库；脚本与配置模板保留）
+tunnel/cloudflared.exe
+tunnel/logs/
+tunnel/config-named-active.yml
+tunnel/*.log
+
+# 视频下载产物与下载工具二进制（体积大，不入库）
+video/downloads/
+video/bbdown/
+video/bin/
+video/_tmp/
+video/_dllogs/
+video/*.log
+
+# 数据库文件（SQLite 及其 WAL / SHM 辅助文件）
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# 用户上传文件
+uploads/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 测试缓存
+.pytest_cache/
+__pycache__/
+
+# ============================================================
+# Android / APK 构建产物
+# ============================================================
+# 便携构建工具链（JDK / Android SDK / Gradle，体积数百 MB）
+.android-build/
+
+# Android 封装工程（本地构建 APK 用，不随仓库分发）
+android/
+
+
+
+# 构建出的 APK
+*.apk
+*.aab
+
+# 运行时生成的音乐占位文件不要放这里，但占位音乐是项目的一部分，不忽略
+# 用户自行替换的音乐文件若放在 static/music/ 中，会被 git 跟踪
+# 所以用户可在 clone 后自行替换
+
+# ============================================================
+# 本机调试 / 个人数据（不随仓库发布）
+# ============================================================
+# 内网穿透探测脚本（含访问令牌，严禁入库）
+sakurafrp/
+
+# 旧版本备份快照
+_backup/
+
+# 根目录临时调试输出
+/_*.txt
+/_*.json
+/_*.py
+/_*.log
+
+# 自检产物（含 Fernet 密钥）
+sa_media_selfcheck*
+
+# Tesseract 手册页（误放在根目录的文档，不入库）
+/*.1.html
+/*.5.html
