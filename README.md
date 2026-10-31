@@ -239,7 +239,6 @@ study-assistant/
 ├── extensions.py             # Flask 扩展初始化（Flask-Login）
 ├── manage.py                 # 服务管理入口（start/stop/status/restart/log）
 ├── migrate_db.py             # 旧库结构迁移
-├── gen_questions.py          # 【已废弃】题库生成器 v0，请改用 tools/build_question_bank.py
 ├── requirements.txt          # 核心运行时依赖
 ├── requirements-handwriting.txt  # 可选：手写体 OCR 插件
 ├── requirements-media.txt    # 可选：媒体库（R2 / boto3 / cryptography）
@@ -299,7 +298,8 @@ study-assistant/
 │   ├── SCHEMA.md / ROUTES.md / DEPLOY.md / TUNNEL.md
 │   ├── media-direct-transfer.md / media-nginx-example.conf
 │   ├── CONTRIBUTING.md / audit-fix-log.md
-│   └── screenshots/          # README 截图
+│   ├── screenshots/          # README 截图
+│   └── third-party/          # 第三方组件许可证（Tesseract OCR）
 ├── tests/                    # 单元测试
 ├── tools/                    # 工具脚本
 │   ├── build_question_bank.py    # 题库批量导入脚本（示例格式，不含题目数据）
