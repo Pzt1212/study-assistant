@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}刷题模式 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>刷题模式</h1>
+  <p class="muted">
+    随机抽题，按题型作答：选择题、填空题自动判分；解答题对照参考答案与评分标准自评得分。
+  </p>
+</div>
+
+<!-- 筛选栏：学科 / 难度 / 题型，切换后自动抽符合条件的新题 -->
+<div class="filter-bar quiz-filter-bar">
+  <div class="filter-row quiz-filter-row">
+    <select id="quiz-subject-filter" class="filter-select" title="学科筛选">
+      <option value="">全部学科</option>
+      {% for s in subjects %}
+      <option value="{{ s }}">{{ s }}</option>
+      {% endfor %}
+    </select>
+
+    <select id="quiz-difficulty" class="filter-select" title="难度筛选">
+      <option value="">全部难度</option>
+      {% for d in difficulties %}
+      <option value="{{ d }}">{{ d }}</option>
+      {% endfor %}
+    </select>
+
+    <select id="quiz-type" class="filter-select" title="抽题范围">
+      <option value="">全部题型</option>
+      {% for t in types %}
+      <option value="{{ t }}">{{ t }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="button" class="btn btn-ghost" id="btn-reload">换一道</button>
+  </div>
+  <p class="filter-hint muted">切换任一筛选条件将自动抽取符合条件的新题；无题目时会给出提示。</p>
+</div>
+
+<div class="quiz-layout">
+  <!-- 题目卡片 -->
+  <div class="card quiz-card">
+    <div class="quiz-stats-top">
+      <span class="quiz-subject-label" id="quiz-subject">科目</span>
+      <div class="quiz-score">
+        <span class="quiz-stat">对&nbsp;<strong class="stat-ok" id="score-correct">{{ stats.correct }}</strong></span>
+        <span class="quiz-stat-sep"></span>
+        <span class="quiz-stat">错&nbsp;<strong class="stat-err" id="score-wrong">{{ stats.wrong }}</strong></span>
+        <span class="quiz-stat-sep"></span>
+        <span class="quiz-stat">正确率&nbsp;<strong id="score-accuracy">{{ "%.1f"|format(stats.accuracy) }}%</strong></span>
+      </div>
+    </div>
+
+    <div id="quiz-body">
+      <div class="quiz-loading">加载题目中…</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

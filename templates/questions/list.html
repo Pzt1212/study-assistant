@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}题库 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>题库</h1>
+    <p class="muted">共 {{ questions|length }} 道（当前筛选结果）。</p>
+  </div>
+  <div class="head-actions">
+    <div class="quiz-stats">
+      <span class="cell-muted">对 <b class="stat-ok">{{ stats.correct }}</b></span>
+      <span class="dot" style="display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--border);margin:0 6px"></span>
+      <span class="cell-muted">错 <b class="stat-err">{{ stats.wrong }}</b></span>
+      <span class="dot" style="display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--border);margin:0 6px"></span>
+      <span class="cell-muted">正确率 <b>{{ "%.1f"|format(stats.accuracy) }}%</b></span>
+    </div>
+    <a href="{{ url_for('questions.quiz') }}" class="btn btn-primary">开始刷题</a>
+    <a href="{{ url_for('questions.new') }}" class="btn">新增题目</a>
+  </div>
+</div>
+
+<!-- 分类筛选栏 -->
+<div class="filter-bar">
+  <form method="get" action="{{ url_for('questions.index') }}" id="filter-form">
+    <div class="filter-row">
+      <input type="search" name="q" placeholder="搜索题干/解析/科目" value="{{ keyword }}" class="filter-search">
+      <button class="btn btn-ghost" type="submit">搜索</button>
+    </div>
+    <div class="filter-row">
+      <select name="subject" onchange="this.form.submit()" class="filter-select">
+        <option value="">全部学科</option>
+        {% for s in subjects %}
+        <option value="{{ s }}" {% if s == current_subject %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <select name="topic" onchange="this.form.submit()" class="filter-select">
+        <option value="">全部主题</option>
+        {% for t in topics %}
+        <option value="{{ t }}" {% if t == current_topic %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+      <select name="type" onchange="this.form.submit()" class="filter-select">
+        <option value="">全部题型</option>
+        {% for t in types %}
+        <option value="{{ t }}" {% if t == current_type %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+      <select name="difficulty" onchange="this.form.submit()" class="filter-select">
+        <option value="">全部难度</option>
+        {% for d in difficulties %}
+        <option value="{{ d }}" {% if d == current_difficulty %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+      <a href="{{ url_for('questions.index') }}" class="btn btn-sm btn-ghost">重置</a>
+    </div>
+  </form>
+</div>
+
+{% if questions %}
+<div class="portal-grid cols-2">
+  {% for q in questions %}
+  <article class="quiz-card-item">
+    <div class="quiz-card-tags">
+      <span class="q-subject">{{ q.subject }}</span>
+      <span class="sep">·</span>
+      <span>{{ q.topic or '未分类' }}</span>
+      <span class="sep">·</span>
+      <span>{{ q.question_type or '选择题' }}</span>
+      <span class="sep">·</span>
+      <span>{{ q.difficulty or '中等' }}</span>
+    </div>
+    {% if q.image %}
+    <div class="quiz-card-figure">
+      <img src="{{ q.image }}" alt="题图" loading="lazy">
+    </div>
+    {% endif %}
+    <div class="quiz-card-content">{{ q.content }}</div>
+    <div class="quiz-card-foot">
+      <span class="q-answer">答案：{{ q.answer }}</span>
+      {% if q.analysis %}<span class="q-answer" title="{{ q.analysis }}">解析</span>{% endif %}
+      <span class="spacer"></span>
+      <a href="{{ url_for('questions.edit', question_id=q.id) }}" class="btn btn-sm btn-ghost">编辑</a>
+      <form method="post" action="{{ url_for('questions.delete', question_id=q.id) }}"
+            class="inline-form" data-confirm="确定删除这道题吗？">
+        <button class="btn btn-sm btn-ghost" type="submit" style="color:var(--color-danger)">删除</button>
+      </form>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>{{ '没有找到匹配的题目。' if keyword else '题库是空的，点击「新增题目」开始添加吧。' }}</p>
+</div>
+{% endif %}
+{% endblock %}

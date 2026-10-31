@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}在线题库 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>在线题库</h1>
+  <p class="muted">接入你自己的问答 API，把答案批量导入个人题库。</p>
+</div>
+
+<div class="card qb-card">
+  <h2 class="qb-section-title">
+    接入你的题库 API
+    {% if not enabled %}<span class="badge badge-red">已关闭</span>{% endif %}
+  </h2>
+  <p class="muted qb-desc">
+    本项目<strong>不内置任何题目，也不提供公共接口</strong>。你需要自备一个「一题一答」的
+    JSON 接口：请求时带上题目参数 <code>q</code>，响应中返回 <code>answer</code> 字段即可。
+  </p>
+
+  <details class="qb-hint">
+    <summary>接口约定与示例</summary>
+    <pre class="qb-code">GET {你的地址}?q=题目内容&amp;token={令牌}
+
+// 支持的响应结构（任选其一）
+{"answer": "答案文本"}
+{"data": {"answer": "答案文本"}}
+{"data": "答案文本"}</pre>
+    <p class="muted">接口地址与令牌也可通过环境变量预置：
+      <code>QUESTION_BANK_API_URL</code>、<code>QUESTION_BANK_TOKEN</code>，
+      页面上留空时会自动取用。</p>
+  </details>
+
+  {% if enabled %}
+  <form method="post" action="{{ url_for('question_bank.import_questions') }}" class="qb-form">
+    <div class="qb-select-group">
+      <label>接口地址
+        <input type="url" name="api_url" value="{{ api_url }}"
+               placeholder="https://your-api.example.com/ask">
+      </label>
+      <label>访问令牌 Token（可选）
+        <input type="text" name="token" value=""
+               placeholder="{{ '已在环境变量中配置，留空即使用该值' if token_configured else '你的 API 令牌' }}">
+      </label>
+      <label>题目（每行一题）
+        <textarea name="questions" rows="6" required
+                  placeholder="例如：&#10;中国的首都是哪里？&#10;1 + 1 等于多少？"></textarea>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary">查询答案并导入</button>
+  </form>
+  <p class="muted qb-hint">单次最多导入 {{ max_questions }} 题。一题一答接口不返回 A/B/C/D 选项，
+    导入后可在「编辑题目」页补充干扰项。</p>
+  {% else %}
+  <p class="muted">在线题库已被管理员通过 <code>WKAPI_ENABLED=0</code> 关闭。</p>
+  {% endif %}
+</div>
+{% endblock %}

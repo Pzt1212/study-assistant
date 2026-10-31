@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}{{ '编辑题目' if q.id else '新增题目' }} - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{{ '编辑题目' if q.id else '新增题目' }}</h1>
+</div>
+
+<div class="card question-form-card">
+  <form method="post"
+        action="{{ url_for('questions.edit', question_id=q.id) if q.id else url_for('questions.new') }}"
+        class="form-stack">
+    <div class="field">
+      <label for="subject">科目</label>
+      <input type="text" id="subject" name="subject" list="subject-list" required
+             value="{{ q.subject }}" placeholder="例如：数学、英语、Python">
+      <datalist id="subject-list">
+        {% for s in subjects %}<option value="{{ s }}">{% endfor %}
+      </datalist>
+    </div>
+
+    <div class="q-meta-grid">
+      <div class="field">
+        <label for="question_type">题型</label>
+        <select id="question_type" name="question_type">
+          {% for t in ['选择题','填空题','解答题'] %}
+          <option value="{{ t }}" {% if q.question_type == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="difficulty">难度</label>
+        <select id="difficulty" name="difficulty">
+          {% for d in ['简单','中等','较难'] %}
+          <option value="{{ d }}" {% if q.difficulty == d %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="topic">知识点 / 主题</label>
+        <input type="text" id="topic" name="topic" value="{{ q.topic }}" placeholder="如：有理数（可选）">
+      </div>
+      <div class="field">
+        <label for="grade">年级</label>
+        <input type="text" id="grade" name="grade" value="{{ q.grade }}" placeholder="如：初中（可选）">
+      </div>
+      <div class="field">
+        <label for="score">分值</label>
+        <input type="number" id="score" name="score" min="0" max="100" value="{{ q.score }}" style="width:90px">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="content">题干</label>
+      <textarea id="content" name="content" rows="3" required placeholder="请输入题目内容">{{ q.content }}</textarea>
+      {% if q.image %}
+      <div class="question-form-image">
+        <img src="{{ q.image }}" alt="题图预览">
+        <p class="muted form-help">当前自动生成的题图（保存后按新题干自动更新）。</p>
+      </div>
+      {% else %}
+      <p class="muted form-help">数学题保存后会自动生成配图（数轴 / 几何图形 / 坐标系等可识别的题型）。</p>
+      {% endif %}
+    </div>
+
+    <div id="option-wrap">
+      <div class="option-grid">
+        <div class="field">
+          <label for="option_a">选项 A</label>
+          <input type="text" id="option_a" name="option_a" value="{{ q.option_a }}">
+        </div>
+        <div class="field">
+          <label for="option_b">选项 B</label>
+          <input type="text" id="option_b" name="option_b" value="{{ q.option_b }}">
+        </div>
+        <div class="field">
+          <label for="option_c">选项 C</label>
+          <input type="text" id="option_c" name="option_c" value="{{ q.option_c }}">
+        </div>
+        <div class="field">
+          <label for="option_d">选项 D</label>
+          <input type="text" id="option_d" name="option_d" value="{{ q.option_d }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="answer-choice-wrap" style="display:none">
+      <label for="answer_choice">正确答案</label>
+      <select id="answer_choice" name="answer_choice">
+        {% for opt in ['A','B','C','D'] %}
+        <option value="{{ opt }}" {% if q.answer == opt %}selected{% endif %}>选项 {{ opt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field" id="answer-text-wrap">
+      <label for="answer_text">答案（填空/解答题填参考答案，可用「或」分隔多个等价答案）</label>
+      <textarea id="answer_text" name="answer_text" rows="2"
+                placeholder="例如：x = 2">{{ q.answer }}</textarea>
+    </div>
+
+    <div class="field">
+      <label for="analysis">解析（可选）</label>
+      <textarea id="analysis" name="analysis" rows="3" placeholder="补充答案解析，刷题时会展示">{{ q.analysis }}</textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">保存</button>
+      <a href="{{ url_for('questions.index') }}" class="btn btn-ghost">取消</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    var typeSel = document.getElementById("question_type");
+    var optWrap = document.getElementById("option-wrap");
+    var awSel = document.getElementById("answer-choice-wrap");
+    var awText = document.getElementById("answer-text-wrap");
+    function isChoice() { return typeSel && typeSel.value === "选择题"; }
+    function sync() {
+      var c = isChoice();
+      if (optWrap) optWrap.style.display = c ? "" : "none";
+      if (awSel) awSel.style.display = c ? "" : "none";
+      if (awText) awText.style.display = c ? "none" : "";
+    }
+    if (typeSel) {
+      sync();
+      typeSel.addEventListener("change", sync);
+    }
+  })();
+</script>
+{% endblock %}
