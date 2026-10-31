@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}视频 - 学习助手{% endblock %}
+{% block crumb %}视频{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>视频</h1>
+    <p class="muted">粘贴 B 站链接在线播放，或播放已下载的本地视频；切换到其它页面时可选「后台播放」。</p>
+  </div>
+</div>
+
+<!-- 来源输入 -->
+<div class="video-source">
+  <form id="video-form" class="video-resolve-form">
+    <input type="url" id="video-url" placeholder="粘贴 B 站视频链接 / BV号，如 https://www.bilibili.com/video/BVxxxx"
+           autocomplete="off">
+    <button type="submit" class="btn btn-primary">播放</button>
+  </form>
+  <div id="video-error" class="video-error" hidden></div>
+</div>
+
+<!-- 播放器（B站 iframe / 本地 video） -->
+<div class="video-player-wrap" id="video-player-wrap" hidden>
+  <div class="video-player" id="video-player"></div>
+  <div class="video-meta">
+    <span class="video-title" id="video-title"></span>
+    <span class="video-author muted" id="video-author"></span>
+    <button type="button" class="btn btn-background" id="btn-background"
+            title="切到其它页面后，视频会在右下角浮窗继续播放">
+      <span class="bg-dot" id="bg-dot"></span><span id="bg-label">▶ 后台播放 · 切页续播</span>
+    </button>
+  </div>
+</div>
+
+<!-- 本地视频库 -->
+<div class="video-local">
+  <div class="portal-head">
+    <h2>本地视频</h2>
+    <span class="muted">{{ local|length }} 个文件</span>
+  </div>
+  {% if local %}
+  <div class="portal-grid">
+    {% for v in local %}
+    <article class="portal-card js-local-card" data-file="{{ v.file }}" data-title="{{ v.title }}">
+      <a class="portal-cover video-cover" style="text-decoration:none">
+        <img class="vthumb" alt="" loading="lazy" data-file="{{ v.file }}" onerror="this.remove()">
+        <span class="cover-play">▶</span>
+        <span class="cover-type">{{ v.ext|upper }}</span>
+      </a>
+      <div class="portal-body">
+        <div class="portal-title">{{ v.title }}</div>
+        <div class="portal-meta"><span>{{ (v.size/1048576)|round(1) }} MB</span></div>
+        <div class="portal-actions">
+          <button type="button" class="btn btn-sm btn-primary js-play-local">播放</button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>还没有本地视频。运行 BBDown 下载后会出现在这里（目录：<code>video/downloads/</code>）。</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.SA_VIDEO = {
+    local: {{ local|tojson }},
+    servePrefix: "/video/files/"
+  };
+</script>
+<script src="{{ url_for('static', filename='js/video.js') }}"></script>
+{% endblock %}

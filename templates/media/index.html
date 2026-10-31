@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}媒体库 - 学习助手{% endblock %}
+
+{% block content %}
+<style>
+  .media-page { display: flex; flex-direction: column; gap: 16px; max-width: 1080px; margin: 0 auto; width: 100%; }
+  .media-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .media-toolbar h2 { margin: 0 12px 0 0; font-size: 18px; }
+  .seg { display: inline-flex; border: 1px solid var(--border, #d9dde3); border-radius: 8px; overflow: hidden; background: var(--bg-2, #fff); }
+  .seg button { border: 0; background: transparent; padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--text, #333); }
+  .seg button + button { border-left: 1px solid var(--border, #d9dde3); }
+  .seg button.on { background: var(--primary, #3b82f6); color: #fff; }
+  .chip { font-size: 12px; color: var(--text-dim, #666); background: var(--bg-2, #f3f4f6); padding: 5px 10px; border-radius: 999px; }
+  .drop { border: 2px dashed var(--border, #cbd2da); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; background: var(--bg-2, #fafbfc); transition: border-color .15s, background .15s; }
+  .drop.dragover { border-color: var(--primary, #3b82f6); background: color-mix(in srgb, var(--primary, #3b82f6) 6%, #fff); }
+  .drop .big { font-size: 15px; font-weight: 600; }
+  .drop .sub { font-size: 12px; color: var(--text-dim, #888); margin-top: 4px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--bg-2, #fff); border: 1px solid var(--border, #e5e7eb); border-radius: 12px; padding: 14px; }
+  .card h3 { margin: 0 0 10px; font-size: 15px; }
+  .up-item { border: 1px solid var(--border, #eceef1); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+  .up-item .row1 { display: flex; align-items: center; gap: 8px; }
+  .up-item .name { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .up-item .bar { height: 8px; border-radius: 999px; background: #eef0f3; overflow: hidden; margin-top: 8px; }
+  .up-item .bar i { display: block; height: 100%; width: 0%; background: var(--primary, #3b82f6); transition: width .2s; }
+  .up-item .meta { font-size: 11px; color: var(--text-dim, #888); margin-top: 5px; }
+  table.media-list { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.media-list th, table.media-list td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border, #f0f1f3); }
+  table.media-list th { color: var(--text-dim, #777); font-weight: 500; }
+  .row-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  .empty { text-align: center; color: var(--text-dim, #999); padding: 22px 0; font-size: 13px; }
+  #playerBox video { width: 100%; max-height: 420px; background: #000; border-radius: 10px; }
+  .p-meta { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 12px; color: var(--text-dim, #777); }
+  .ok { color: #16a34a; } .bad { color: #dc2626; }
+  .muted { color: var(--text-dim, #999); font-size: 12px; }
+  #toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: rgba(17,24,39,.92); color: #fff; padding: 9px 16px; border-radius: 10px; font-size: 13px; z-index: 99; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 86vw; }
+  #toast.show { opacity: 1; }
+</style>
+
+<div class="media-page">
+  <div class="media-toolbar">
+    <h2>媒体库</h2>
+    <div class="seg" id="devSeg" title="设备模式：影响上传并发数">
+      <button type="button" data-dev="auto">自动</button>
+      <button type="button" data-dev="mobile">手机</button>
+      <button type="button" data-dev="desktop">电脑</button>
+    </div>
+    <span class="chip" id="modeChip"></span>
+    <span style="flex:1"></span>
+    <span class="muted" id="quotaChip"></span>
+  </div>
+
+  <div class="drop" id="dropZone" tabindex="0" role="button" aria-label="选择或拖入视频文件">
+    <div class="big">点击选择 / 拖入视频文件（自动分块直传，不走隧道）</div>
+    <div class="sub" id="dropSub">支持 mp4 / webm / mov / mkv / 音频等；大文件断点续传；完成后自动云端校验与备份</div>
+  </div>
+  <input type="file" id="fileInput" accept="video/*,audio/*,.mkv,.avi,.flv,.ts" hidden>
+
+  <div class="grid">
+    <section class="card">
+      <h3>上传任务</h3>
+      <div id="activeUploads"><div class="empty">暂无上传任务</div></div>
+    </section>
+
+    <section class="card">
+      <h3>我的媒体</h3>
+      <div style="overflow:auto">
+        <table class="media-list" id="mediaTable">
+          <thead><tr><th>名称</th><th>大小</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody id="mediaBody"></tbody>
+        </table>
+        <div class="empty" id="mediaEmpty" hidden>还没有媒体，先上传一个吧</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" id="playerBox" hidden>
+    <video id="player" controls playsinline preload="metadata"></video>
+    <div class="p-meta">
+      <strong id="pTitle"></strong>
+      <span class="chip" id="pSource"></span>
+    </div>
+  </section>
+</div>
+<div id="toast"></div>
+{% endblock %}
+
+{% block scripts %}
+{# resumable.js：proxy 中转通道使用（r2 直传通道无需，加载无副作用） #}
+<script src="{{ url_for('static', filename='vendor/resumable.js') }}"></script>
+<script src="{{ url_for('static', filename='js/media.js') }}"></script>
+{% endblock %}
