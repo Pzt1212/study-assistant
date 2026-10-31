@@ -1,19 +1,19 @@
 @echo off
 rem ============================================================
-rem  å­¦ä¹ åŠ©æ‰‹ - åœæ­¢åå°æœåŠ¡ï¼ˆstop.batï¼‰
-rem  1) ä¼˜å…ˆè¯»å– logs\app.pid åœæ­¢æœåŠ¡
-rem  2) æ—  PID æ–‡ä»¶æ—¶æŒ‰ç«¯å£ï¼ˆé»˜è®¤ 5000 / APP_PORT å¯è¦†ç›–ï¼‰æŸ¥æ‰¾å¹¶ç»“æŸè¿›ç¨‹
+rem  Ñ§Ï°ÖúÊÖ - Í£Ö¹ºóÌ¨·şÎñ£¨stop.bat£©
+rem  1) ÓÅÏÈ¶ÁÈ¡ logs\app.pid Í£Ö¹·şÎñ
+rem  2) ÎŞ PID ÎÄ¼şÊ±°´¶Ë¿Ú£¨Ä¬ÈÏ 5000 / APP_PORT ¿É¸²¸Ç£©²éÕÒ²¢½áÊø½ø³Ì
 rem ============================================================
 chcp 65001 >nul
 cd /d "%~dp0.."
 
 set "PY=%PYTHON%"
-if not defined PY if exist "%LOCALAPPDATA%\Local\Python\bin\python.exe" set "PY=%LOCALAPPDATA%\Local\Python\bin\python.exe"
+if not defined PY if exist "%LOCALAPPDATA%\Python\bin\python.exe" set "PY=%LOCALAPPDATA%\Python\bin\python.exe"
 if not defined PY set "PY=python"
 
 set "APP_PID_FILE=logs\app.pid"
 set "PORT=%APP_PORT%"
 if not defined PORT set "PORT=5000"
 
-echo åœæ­¢å­¦ä¹ åŠ©æ‰‹æœåŠ¡ï¼ˆPID æ–‡ä»¶ä¼˜å…ˆï¼Œç«¯å£ %PORT% å…œåº•ï¼‰â€¦
+echo Í£Ö¹Ñ§Ï°ÖúÊÖ·şÎñ£¨PID ÎÄ¼şÓÅÏÈ£¬¶Ë¿Ú %PORT% ¶µµ×£©¡­
 "%PY%" "%~dp0..\tools\stop_server.py"

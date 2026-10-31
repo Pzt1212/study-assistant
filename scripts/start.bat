@@ -1,41 +1,41 @@
 @echo off
 rem ============================================================
-rem  å­¦ä¹ åŠ©æ‰‹ - ä¸€é”®åå°å¯åŠ¨ï¼ˆstart.batï¼‰
-rem  ä½¿ç”¨ pythonw.exe åå°è¿è¡Œï¼ˆæ— é»‘è‰²å‘½ä»¤è¡Œçª—å£ï¼‰ï¼Œ
-rem  æ—¥å¿—å†™å…¥ logs\app.logï¼ŒPID å†™å…¥ logs\app.pidï¼ˆä¾›åœæ­¢ä½¿ç”¨ï¼‰
-rem  åœæ­¢ï¼šstop.bat / manage.py stop   æŸ¥çœ‹çŠ¶æ€ï¼šmanage.py status
-rem  ç›‘å¬åœ°å€/ç«¯å£å¯ç”¨ç¯å¢ƒå˜é‡ APP_HOST / APP_PORT è¦†ç›–
+rem  Ñ§Ï°ÖúÊÖ - Ò»¼üºóÌ¨Æô¶¯£¨start.bat£©
+rem  Ê¹ÓÃ pythonw.exe ºóÌ¨ÔËĞĞ£¨ÎŞºÚÉ«ÃüÁîĞĞ´°¿Ú£©£¬
+rem  ÈÕÖ¾Ğ´Èë logs\app.log£¬PID Ğ´Èë logs\app.pid£¨¹©Í£Ö¹Ê¹ÓÃ£©
+rem  Í£Ö¹£ºstop.bat / manage.py stop   ²é¿´×´Ì¬£ºmanage.py status
+rem  ¼àÌıµØÖ·/¶Ë¿Ú¿ÉÓÃ»·¾³±äÁ¿ APP_HOST / APP_PORT ¸²¸Ç
 rem ============================================================
 chcp 65001 >nul
 cd /d "%~dp0.."
 
 if not exist logs mkdir logs
 
-rem å®šä½ pythonwï¼ˆåå°è¿è¡Œï¼Œä¸å¼¹é»‘è‰²çª—å£ï¼‰
+rem ¶¨Î» pythonw£¨ºóÌ¨ÔËĞĞ£¬²»µ¯ºÚÉ«´°¿Ú£©
 set "PYW=%PYTHONW%"
-if not defined PYW if exist "%LOCALAPPDATA%\Local\Python\bin\pythonw.exe" set "PYW=%LOCALAPPDATA%\Local\Python\bin\pythonw.exe"
+if not defined PYW if exist "%LOCALAPPDATA%\Python\bin\pythonw.exe" set "PYW=%LOCALAPPDATA%\Python\bin\pythonw.exe"
 if not defined PYW set "PYW=pythonw"
 
-rem æ—¥å¿—ä¸ PID æ–‡ä»¶ï¼ˆæœ¬è„šæœ¬çº¦å®š logs\app.log / logs\app.pidï¼‰
+rem ÈÕÖ¾Óë PID ÎÄ¼ş£¨±¾½Å±¾Ô¼¶¨ logs\app.log / logs\app.pid£©
 set "APP_LOG_FILE=logs\app.log"
 set "APP_PID_FILE=logs\app.pid"
 set "FLASK_DEBUG=0"
 
 start "study-assistant-server" /B "%PYW%" "%~dp0..\tools\run_server.py"
-echo æœåŠ¡æ­£åœ¨åå°å¯åŠ¨â€¦
-echo   æ—¥å¿—ï¼šlogs\app.log
-echo   åœ°å€ï¼šhttp://127.0.0.1:%APP_PORT%   ï¼ˆé»˜è®¤ 5000ï¼Œå¯ç”¨ APP_PORT è¦†ç›–ï¼‰
+echo ·şÎñÕıÔÚºóÌ¨Æô¶¯¡­
+echo   ÈÕÖ¾£ºlogs\app.log
+echo   µØÖ·£ºhttp://127.0.0.1:%APP_PORT%   £¨Ä¬ÈÏ 5000£¬¿ÉÓÃ APP_PORT ¸²¸Ç£©
 echo.
 
-rem ç­‰å¾… 3 ç§’ååšä¸€æ¬¡å¥åº·æ£€æŸ¥
+rem µÈ´ı 3 Ãëºó×öÒ»´Î½¡¿µ¼ì²é
 timeout /t 3 /nobreak >nul
 set "PORT=%APP_PORT%"
 if not defined PORT set "PORT=5000"
-powershell -NoProfile -Command "$u='http://127.0.0.1:'+$env:PORT+'/api/health'; try { $r=Invoke-WebRequest -UseBasicParsing $u -TimeoutSec 3; Write-Host ('å¥åº·æ£€æŸ¥é€šè¿‡ï¼šHTTP ' + $r.StatusCode) } catch { Write-Host 'å¥åº·æ£€æŸ¥æœªé€šè¿‡ï¼šæœåŠ¡å¯èƒ½ä»åœ¨å¯åŠ¨ï¼Œè¯·ç¨å€™è¿è¡Œ python manage.py status æŸ¥çœ‹' }"
+powershell -NoProfile -Command "$u='http://127.0.0.1:'+$env:PORT+'/api/health'; try { $r=Invoke-WebRequest -UseBasicParsing $u -TimeoutSec 3; Write-Host ('½¡¿µ¼ì²éÍ¨¹ı£ºHTTP ' + $r.StatusCode) } catch { Write-Host '½¡¿µ¼ì²éÎ´Í¨¹ı£º·şÎñ¿ÉÄÜÈÔÔÚÆô¶¯£¬ÇëÉÔºòÔËĞĞ python manage.py status ²é¿´' }"
 
 echo.
-echo å¸¸ç”¨å‘½ä»¤ï¼š
-echo   python manage.py status    æŸ¥çœ‹è¿è¡ŒçŠ¶æ€
-echo   python manage.py log       æŸ¥çœ‹æœ€è¿‘æ—¥å¿—
-echo   stop.bat                   åœæ­¢æœåŠ¡
+echo ³£ÓÃÃüÁî£º
+echo   python manage.py status    ²é¿´ÔËĞĞ×´Ì¬
+echo   python manage.py log       ²é¿´×î½üÈÕÖ¾
+echo   stop.bat                   Í£Ö¹·şÎñ
 echo.

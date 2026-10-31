@@ -1,12 +1,12 @@
 @echo off
 rem ============================================================
-rem  瀛︿範鍔╂墜 - 鏌ョ湅鍚庡彴鏈嶅姟鐘舵�侊紙鍚仴搴锋鏌ワ級
+rem  学习助手 - 查看后台服务状态（含健康检查）
 rem ============================================================
 chcp 65001 >nul
 cd /d "%~dp0.."
 
 set "PY=%PYTHON%"
-if not defined PY if exist "%LOCALAPPDATA%\Local\Python\bin\python.exe" set "PY=%LOCALAPPDATA%\Local\Python\bin\python.exe"
+if not defined PY if exist "%LOCALAPPDATA%\Python\bin\python.exe" set "PY=%LOCALAPPDATA%\Python\bin\python.exe"
 if not defined PY set "PY=python"
 
 "%PY%" "%~dp0..\tools\status_server.py"

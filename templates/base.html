@@ -17,10 +17,7 @@
       }
     })();
   </script>
-  {# Inter 字体（离线自动回退系统字体） #}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  {# 字体：只用系统字体栈（见 style.css 的 --font），不引用任何外部 CDN，离线可用 #}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   {# 移动端适配层：仅在窄屏/触控设备生效，桌面端表现不变（见 static/css/mobile.css） #}

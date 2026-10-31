@@ -1,25 +1,25 @@
 @echo off
 rem ============================================================
-rem  å­¦ä¹ åŠ©æ‰‹ - ä¸€é”®åå°å¯åŠ¨
-rem  åŒå‡»æœ¬æ–‡ä»¶å³ä»¥åå°æ–¹å¼å¯åŠ¨æœåŠ¡ï¼ˆæ— é»‘è‰²çª—å£ã€æ—¥å¿—å†™ logs\server.logï¼‰
-rem  åœæ­¢ï¼šåŒå‡» stop_server.bat   æŸ¥çœ‹çŠ¶æ€ï¼šåŒå‡» status_server.bat
-rem  ç›‘å¬åœ°å€/ç«¯å£å¯ç”¨ç¯å¢ƒå˜é‡ APP_HOST / APP_PORT è¦†ç›–
+rem  Ñ§Ï°ÖúÊÖ - Ò»¼üºóÌ¨Æô¶¯
+rem  Ë«»÷±¾ÎÄ¼ş¼´ÒÔºóÌ¨·½Ê½Æô¶¯·şÎñ£¨ÎŞºÚÉ«´°¿Ú¡¢ÈÕÖ¾Ğ´ logs\server.log£©
+rem  Í£Ö¹£ºË«»÷ stop_server.bat   ²é¿´×´Ì¬£ºË«»÷ status_server.bat
+rem  ¼àÌıµØÖ·/¶Ë¿Ú¿ÉÓÃ»·¾³±äÁ¿ APP_HOST / APP_PORT ¸²¸Ç
 rem ============================================================
 chcp 65001 >nul
 cd /d "%~dp0.."
 
-rem å®šä½ pythonwï¼ˆåå°è¿è¡Œï¼Œä¸å¼¹é»‘è‰²çª—å£ï¼‰
+rem ¶¨Î» pythonw£¨ºóÌ¨ÔËĞĞ£¬²»µ¯ºÚÉ«´°¿Ú£©
 set "PYW=%PYTHONW%"
-if not defined PYW if exist "%LOCALAPPDATA%\Local\Python\bin\pythonw.exe" set "PYW=%LOCALAPPDATA%\Local\Python\bin\pythonw.exe"
+if not defined PYW if exist "%LOCALAPPDATA%\Python\bin\pythonw.exe" set "PYW=%LOCALAPPDATA%\Python\bin\pythonw.exe"
 if not defined PYW set "PYW=pythonw"
 
 start "" "%PYW%" "%~dp0..\tools\run_server.py"
-echo æœåŠ¡æ­£åœ¨åå°å¯åŠ¨ï¼Œæ—¥å¿—ï¼šlogs\server.log
+echo ·şÎñÕıÔÚºóÌ¨Æô¶¯£¬ÈÕÖ¾£ºlogs\server.log
 
-rem ç­‰å¾… 2 ç§’ååšä¸€æ¬¡å¥åº·æ£€æŸ¥
+rem µÈ´ı 2 Ãëºó×öÒ»´Î½¡¿µ¼ì²é
 timeout /t 2 /nobreak >nul
-powershell -NoProfile -Command "$u='http://127.0.0.1:5000/api/health'; try { $r=Invoke-WebRequest -UseBasicParsing $u -TimeoutSec 3; Write-Host ('å¥åº·æ£€æŸ¥é€šè¿‡ï¼šHTTP ' + $r.StatusCode) } catch { Write-Host 'å¥åº·æ£€æŸ¥æœªé€šè¿‡ï¼ˆç¨ç­‰åè¿è¡Œ status_server.bat å†çœ‹ï¼‰' }"
+powershell -NoProfile -Command "$u='http://127.0.0.1:5000/api/health'; try { $r=Invoke-WebRequest -UseBasicParsing $u -TimeoutSec 3; Write-Host ('½¡¿µ¼ì²éÍ¨¹ı£ºHTTP ' + $r.StatusCode) } catch { Write-Host '½¡¿µ¼ì²éÎ´Í¨¹ı£¨ÉÔµÈºóÔËĞĞ status_server.bat ÔÙ¿´£©' }"
 
 echo.
-echo æµè§ˆå™¨è®¿é—®ï¼šhttp://127.0.0.1:5000
+echo ä¯ÀÀÆ÷·ÃÎÊ£ºhttp://127.0.0.1:5000
 pause

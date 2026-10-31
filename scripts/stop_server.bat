@@ -1,13 +1,13 @@
 @echo off
 rem ============================================================
-rem  å­¦ä¹ åŠ©æ‰‹ - åœæ­¢åŽå°æœåŠ¡
-rem  è¯»å– logs\server.pid ç»ˆæ­¢å¯¹åº”è¿›ç¨‹å¹¶æ¸…ç†
+rem  Ñ§Ï°ÖúÊÖ - Í£Ö¹ºóÌ¨·þÎñ
+rem  ¶ÁÈ¡ logs\server.pid ÖÕÖ¹¶ÔÓ¦½ø³Ì²¢ÇåÀí
 rem ============================================================
 chcp 65001 >nul
 cd /d "%~dp0.."
 
 set "PY=%PYTHON%"
-if not defined PY if exist "%LOCALAPPDATA%\Local\Python\bin\python.exe" set "PY=%LOCALAPPDATA%\Local\Python\bin\python.exe"
+if not defined PY if exist "%LOCALAPPDATA%\Python\bin\python.exe" set "PY=%LOCALAPPDATA%\Python\bin\python.exe"
 if not defined PY set "PY=python"
 
 "%PY%" "%~dp0..\tools\stop_server.py"
