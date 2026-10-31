@@ -3,6 +3,44 @@
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 规范，格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
 
+## [1.0.1] - 2026-10-31
+
+### 修复（Windows 启动链路 · 致命）
+- **`start.vbs` / `start_silent.vbs` 双击后完全无反应**：脚本以 UTF-8（无 BOM）保存且含中文注释，
+  Windows Script Host 按 ANSI/GBK 解析导致字节错位，脚本静默失败、连报错都没有。
+  已改为 **UTF-16LE + BOM** 保存。
+- **`stop.bat` 无法停止服务**：`.bat` 为 LF 行尾 + UTF-8，cmd.exe 逐行解析时把 `if (...)` 块拆断，
+  报「'件优先，端口' 不是内部或外部命令」；`start.bat` 同样受影响。已改为 **GBK + CRLF** 保存。
+- **解释器探测路径多一层目录**：`%LOCALAPPDATA%\Local\Python\...` 指向不存在的路径，
+  导致找不到 `pythonw.exe`。修正为 `%LOCALAPPDATA%\Python\...`（影响 5 个 `.bat`）。
+
+> 以上三项叠加的后果是：按 README 双击启动会毫无反应，且无法用 `stop.bat` 收场。
+> v1.0.1 已逐项实测：启动 → `/api/health` 返回 200 → `stop.bat` 停止 → 端口释放、PID 清理。
+
+### 修复（前端与文档）
+- **移除 Google Fonts 外链**：`templates/base.html` 与 `static/js/settings.js` 引用的
+  `fonts.googleapis.com` 在国内会阻塞首屏渲染。删除后真正做到零 CDN 依赖，
+  字体回退到系统字体栈（`--font` 原本就有回退）。
+- **README 克隆地址**：`your-username` 替换为实际仓库地址；`docs/CONTRIBUTING.md` 两处同步修正。
+- **README 截图说明**：删除"演示数据（`demo` 账号）"的表述——项目并不会自动创建该账号，
+  改为"项目本地运行效果"，并补充注册与管理员提权指引。
+- **README 启动说明**：入口更新为 `scripts\start.vbs`，与目录结构保持一致。
+- **README 新增「下载与运行指南」**：说明 `Download ZIP` 只含源码、不含 exe。
+
+### 修复（管理后台）
+- **OCR 状态页**：在线题库区块仍写着旧 `wkapi` 与 `api.wkexam.com`；同步为"自带 API"，
+  展示已配置的接口地址与令牌状态。
+
+---
+
+## [1.0.0] - 2026-10-31
+
+首个开源版本。包含番茄钟、计时器、背景音乐、题库与刷题、笔记（文本/手写双模式）、
+OCR（印刷体/手写体）、论坛、全局搜索、管理后台、本地视频与媒体库。
+
+> 说明：开源版本从 `v1.0.0` 起重新编号；下方 `2.x` 条目为开源前的内部开发记录。
+
+---
 ## [2.1.0] - 2026-09-09
 
 ### 新增（视频媒体库 · 绕过 Tunnel 的直连分块传输）
