@@ -7,7 +7,7 @@ rem  停止：stop.bat / manage.py stop   查看状态：manage.py status
 rem  监听地址/端口可用环境变量 APP_HOST / APP_PORT 覆盖
 rem ============================================================
 chcp 65001 >nul
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 if not exist logs mkdir logs
 
@@ -21,7 +21,7 @@ set "APP_LOG_FILE=logs\app.log"
 set "APP_PID_FILE=logs\app.pid"
 set "FLASK_DEBUG=0"
 
-start "study-assistant-server" /B "%PYW%" "%~dp0tools\run_server.py"
+start "study-assistant-server" /B "%PYW%" "%~dp0..\tools\run_server.py"
 echo 服务正在后台启动…
 echo   日志：logs\app.log
 echo   地址：http://127.0.0.1:%APP_PORT%   （默认 5000，可用 APP_PORT 覆盖）

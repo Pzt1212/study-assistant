@@ -19,8 +19,8 @@ import subprocess
 import sys
 import time
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CF_DIR = os.path.join(ROOT, "tunnel")
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+CF_DIR = os.path.join(ROOT, "scripts", "tunnel")
 HOME_CF = os.path.join(os.path.expanduser("~"), ".cloudflared")
 CF_EXE = os.path.join(CF_DIR, "cloudflared.exe")
 if not os.path.exists(CF_EXE):

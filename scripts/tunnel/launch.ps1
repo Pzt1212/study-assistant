@@ -2,7 +2,7 @@
 # Usage: powershell -NoProfile -ExecutionPolicy Bypass -File tunnel\launch.ps1
 $ErrorActionPreference = 'Continue'
 
-$Root = Split-Path -Parent $PSScriptRoot
+$Root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $CF   = Join-Path $PSScriptRoot 'cloudflared.exe'
 if (-not (Test-Path $CF)) { $CF = 'cloudflared' }
 $LogDir = Join-Path $PSScriptRoot 'logs'

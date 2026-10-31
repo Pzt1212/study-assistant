@@ -6,14 +6,14 @@ rem  停止：双击 stop_server.bat   查看状态：双击 status_server.bat
 rem  监听地址/端口可用环境变量 APP_HOST / APP_PORT 覆盖
 rem ============================================================
 chcp 65001 >nul
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 rem 定位 pythonw（后台运行，不弹黑色窗口）
 set "PYW=%PYTHONW%"
 if not defined PYW if exist "%LOCALAPPDATA%\Local\Python\bin\pythonw.exe" set "PYW=%LOCALAPPDATA%\Local\Python\bin\pythonw.exe"
 if not defined PYW set "PYW=pythonw"
 
-start "" "%PYW%" "%~dp0tools\run_server.py"
+start "" "%PYW%" "%~dp0..\tools\run_server.py"
 echo 服务正在后台启动，日志：logs\server.log
 
 rem 等待 2 秒后做一次健康检查

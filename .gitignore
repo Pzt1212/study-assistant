@@ -42,18 +42,13 @@ pip-install-*/
 pip-unpack-*/
 
 # Cloudflare Tunnel 运行产物（可执行文件/日志/激活配置不入库；脚本与配置模板保留）
-tunnel/cloudflared.exe
-tunnel/logs/
-tunnel/config-named-active.yml
-tunnel/*.log
+scripts/tunnel/cloudflared.exe
+scripts/tunnel/logs/
+scripts/tunnel/config-named-active.yml
+scripts/tunnel/*.log
 
-# 视频下载产物与下载工具二进制（体积大，不入库）
-video/downloads/
-video/bbdown/
-video/bin/
-video/_tmp/
-video/_dllogs/
-video/*.log
+# 本地视频与下载脚本（含 B 站下载工具，体积大且不适合分发，不入库）
+video/
 
 # 数据库文件（SQLite 及其 WAL / SHM 辅助文件）
 data/

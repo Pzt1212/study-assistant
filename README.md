@@ -37,7 +37,7 @@
 | 论坛 | 发帖 / 回帖 / 删除（`/forum`）；管理员可删除任意帖子与回复。**完全内置，数据存本地 SQLite，不依赖任何外部服务** |
 | 全局搜索 | 搜索笔记标题/内容、题目题干/解析/科目，结果分组展示 |
 | 运行管理 | 一键后台启动 / 停止 / 状态查看（`manage.py` 与配套脚本），管理员账户工具，健康检查接口 |
-| 内网穿透 | Cloudflare Tunnel 免费方案：`tunnel_start.bat` 一键启动（Quick 隧道免登录，分配 `*.trycloudflare.com` 临时公网地址）；支持自定义域名命名隧道（详见 `docs/TUNNEL.md`） |
+| 内网穿透 | Cloudflare Tunnel 免费方案：`scripts\tunnel_start.bat` 一键启动（Quick 隧道免登录，分配 `*.trycloudflare.com` 临时公网地址）；支持自定义域名命名隧道（详见 `docs/TUNNEL.md`） |
 
 ## 环境要求
 
@@ -84,13 +84,13 @@ python app.py
 
 ## 启动与停止（Windows）
 
-**日常只需要记住两个东西：双击 `start.vbs` 启动，双击 `stop.bat` 停止。**
+**日常只需要记住两个东西：双击 `scripts\start.vbs` 启动，双击 `scripts\stop.bat` 停止。**
 
 | 入口 | 作用 |
 |------|------|
-| `start.vbs` | 静默后台启动，不弹任何窗口（推荐） |
-| `start.bat` | 后台启动，并显示启动提示与健康检查结果 |
-| `stop.bat` | 停止服务 |
+| `scripts\start.vbs` | 静默后台启动，不弹任何窗口（推荐） |
+| `scripts\start.bat` | 后台启动，并显示启动提示与健康检查结果 |
+| `scripts\stop.bat` | 停止服务 |
 | `python manage.py …` | 命令行统一管理：`start` / `stop` / `status` / `restart` / `log` |
 
 ```bash
@@ -103,7 +103,7 @@ python manage.py log 80     # 查看最近 80 行日志
 监听地址/端口可用环境变量 `APP_HOST` / `APP_PORT` 覆盖（默认 `127.0.0.1:5000`）。
 所有入口的日志都在 `logs/app.log`，PID 在 `logs/app.pid`。
 
-> **历史脚本**：`start_silent.vbs`、`start_server.bat` / `stop_server.bat` / `status_server.bat`
+> **历史脚本**：`scripts\start_silent.vbs`、`scripts\start_server.bat` / `scripts\stop_server.bat` / `scripts\status_server.bat`
 > 是早期版本留下的等价入口（后者日志写在 `logs/server.log`）。保留仅为兼容，新用户不必使用。
 
 ## 创建管理员账户
@@ -146,7 +146,7 @@ python tools/create_admin.py --username boss --password 你的密码
 ### 5. 视频
 - 在导航栏点击「视频」进入。
 - 页面读取 `video/downloads/` 下的本地视频文件（该目录不入库，需自行放入）。
-- 支持封面抽帧与断点播放；封面抽帧需要 `ffmpeg`（可用 `video/_dl_ffmpeg.py` 获取）。
+- 支持封面抽帧与断点播放；封面抽帧需要 `ffmpeg`（需自行安装并加入 PATH）。
 
 ### 6. 媒体库
 - 在导航栏点击「媒体库」进入（需先安装 `requirements-media.txt` 并配置 R2 密钥）。
@@ -314,8 +314,8 @@ study-assistant/
 │   ├── run_server.py             # 【历史】后台运行入口，请用 manage.py start
 │   ├── stop_server.py            # 【历史】停止服务，请用 manage.py stop
 │   └── status_server.py          # 【历史】查看状态，请用 manage.py status
-├── tunnel/                   # Cloudflare Tunnel 配置模板与脚本
-├── video/                    # 本地视频下载脚本与产物（downloads/ 不入库）
+├── scripts/                  # 启动 / 停止 / 内网穿透脚本（双击入口都在这里）
+│   └── tunnel/               # Cloudflare Tunnel 配置模板与启动脚本
 ├── uploads/                  # 用户上传文件（gitignored）
 ├── data/                     # SQLite 数据库与密钥（gitignored）
 └── logs/                     # 运行日志（gitignored）
