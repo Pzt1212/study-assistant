@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}搜索结果 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>搜索结果</h1>
+  <form class="inline-search" method="get" action="{{ url_for('search.index') }}">
+    <input type="search" name="q" placeholder="搜索笔记、题目、科目…" value="{{ q }}" autofocus>
+    <button class="btn btn-primary" type="submit">搜索</button>
+  </form>
+</div>
+
+{% if not q %}
+<p class="muted">请输入关键词开始搜索。</p>
+{% else %}
+
+<!-- 笔记结果 -->
+<h2 class="search-group-title">笔记（{{ notes|length }}）</h2>
+{% if notes %}
+<div class="search-list">
+  {% for n in notes %}
+  <a class="search-item" href="{{ url_for('notes.detail', note_id=n.id) }}">
+    <div class="search-title">{{ n.title }}</div>
+    <div class="search-preview">{{ n.content[:150] }}{% if n.content|length > 150 %}…{% endif %}</div>
+    <div class="search-meta">更新：{{ n.updated_at }}</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted search-empty">未找到匹配的笔记。</p>
+{% endif %}
+
+<!-- 题目结果 -->
+<h2 class="search-group-title">题目（{{ questions|length }}）</h2>
+{% if questions %}
+<div class="search-list">
+  {% for q in questions %}
+  <a class="search-item" href="{{ url_for('questions.edit', question_id=q.id) }}">
+    <div class="search-title"><span class="badge">{{ q.subject }}</span> {{ q.content[:80] }}</div>
+    {% if q.analysis %}<div class="search-preview">解析：{{ q.analysis[:100] }}</div>{% endif %}
+    <div class="search-meta">点击编辑题目</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted search-empty">未找到匹配的题目。</p>
+{% endif %}
+
+{% endif %}
+{% endblock %}
