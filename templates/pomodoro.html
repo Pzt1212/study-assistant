@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}番茄钟 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>番茄钟</h1>
+  <p class="muted">专注 {{ focus_min }} 分钟，休息 {{ short_min }} 分钟，长休息 {{ long_min }} 分钟</p>
+</div>
+
+<div class="pomodoro-layout">
+  <!-- 左侧：计时器 -->
+  <div class="card pomodoro-card">
+    <!-- 模式切换 -->
+    <div class="pomodoro-modes" id="mode-tabs">
+      <button class="mode-btn active" data-mode="focus" data-minutes="25">专注</button>
+      <button class="mode-btn" data-mode="short_break" data-minutes="5">短休息</button>
+      <button class="mode-btn" data-mode="long_break" data-minutes="15">长休息</button>
+    </div>
+
+    <!-- 圆形倒计时 -->
+    <div class="timer-ring" id="timer-ring">
+      <svg viewBox="0 0 200 200" class="timer-svg">
+        <circle cx="100" cy="100" r="88" class="timer-bg"/>
+        <circle cx="100" cy="100" r="88" class="timer-progress" id="timer-progress"/>
+      </svg>
+      <div class="timer-display" id="timer-display">25:00</div>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="pomodoro-controls">
+      <button class="btn btn-primary btn-lg" id="btn-start">开始</button>
+      <button class="btn btn-ghost btn-lg" id="btn-pause" disabled>暂停</button>
+      <button class="btn btn-ghost btn-lg" id="btn-reset" disabled>重置</button>
+    </div>
+
+    <!-- 自定义时长设置 -->
+    <details class="pomodoro-settings">
+      <summary>自定义时长</summary>
+      <div class="settings-grid">
+        <label>专注：<input type="number" id="setting-focus" value="25" min="1" max="120"> 分钟</label>
+        <label>短休息：<input type="number" id="setting-short" value="5" min="1" max="30"> 分钟</label>
+        <label>长休息：<input type="number" id="setting-long" value="15" min="1" max="60"> 分钟</label>
+      </div>
+      <button class="btn btn-sm" id="btn-apply-settings">应用设置</button>
+    </details>
+  </div>
+
+  <!-- 右侧：今日统计 -->
+  <div class="pomodoro-stats">
+    <div class="card">
+      <h3>今日完成</h3>
+      <div class="big-number" id="today-count">{{ today_focus }}</div>
+      <div class="stat-label">个专注番茄</div>
+    </div>
+
+    <div class="card">
+      <h3>最近 7 天</h3>
+      <div class="bar-chart compact">
+        {% for item in daily_focus %}
+        <div class="bar-col" title="{{ item.day }}：{{ item.count }}">
+          <div class="bar-track">
+            <div class="bar-fill" style="height:{{ [item.count*20, 4]|max }}%"></div>
+          </div>
+          <div class="bar-day">{{ item.day[-2:] }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/pomodoro.js') }}"></script>
+{% endblock %}

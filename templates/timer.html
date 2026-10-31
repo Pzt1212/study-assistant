@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}计时器 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>计时器</h1>
+  <p class="muted">秒表（正计时）与倒计时</p>
+</div>
+
+<div class="timer-layout">
+  <!-- 秒表 -->
+  <div class="card timer-card">
+    <h2>秒表</h2>
+    <div class="timer-ring" id="stopwatch-ring">
+      <svg viewBox="0 0 200 200" class="timer-svg">
+        <circle cx="100" cy="100" r="88" class="timer-bg"/>
+        <circle cx="100" cy="100" r="88" class="timer-progress" id="stopwatch-progress"/>
+      </svg>
+      <div class="timer-display" id="stopwatch-display">00:00.0</div>
+    </div>
+    <div class="pomodoro-controls">
+      <button class="btn btn-primary btn-lg" id="sw-start">开始</button>
+      <button class="btn btn-ghost btn-lg" id="sw-pause" disabled>暂停</button>
+      <button class="btn btn-ghost btn-lg" id="sw-reset" disabled>清零</button>
+    </div>
+  </div>
+
+  <!-- 倒计时 -->
+  <div class="card timer-card">
+    <h2>倒计时</h2>
+    <div class="timer-ring" id="countdown-ring">
+      <svg viewBox="0 0 200 200" class="timer-svg">
+        <circle cx="100" cy="100" r="88" class="timer-bg"/>
+        <circle cx="100" cy="100" r="88" class="timer-progress" id="countdown-progress"/>
+      </svg>
+      <div class="timer-display" id="countdown-display">05:00</div>
+    </div>
+    <div class="countdown-input">
+      <label>设置分钟：<input type="number" id="cd-minutes" value="5" min="1" max="999"></label>
+    </div>
+    <div class="pomodoro-controls">
+      <button class="btn btn-primary btn-lg" id="cd-start">开始</button>
+      <button class="btn btn-ghost btn-lg" id="cd-pause" disabled>暂停</button>
+      <button class="btn btn-ghost btn-lg" id="cd-reset" disabled>重置</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% endblock %}
