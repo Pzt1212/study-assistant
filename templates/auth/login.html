@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}登录 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1 class="auth-title">欢迎回来</h1>
+  <p class="auth-sub">登录你的学习助手账号</p>
+
+  <form method="post" action="{{ url_for('auth.login') }}" class="form-stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field">
+      <label for="username">用户名 / 邮箱</label>
+      <input type="text" id="username" name="username" required
+             placeholder="请输入用户名或邮箱" autofocus>
+    </div>
+    <div class="field">
+      <label for="password">密码</label>
+      <input type="password" id="password" name="password" required placeholder="请输入密码">
+    </div>
+    <label class="checkbox">
+      <input type="checkbox" name="remember" id="remember">
+      <span>记住我（7 天内免登录）</span>
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">登 录</button>
+  </form>
+
+  <p class="auth-switch">还没有账号？<a href="{{ url_for('auth.register') }}">立即注册</a></p>
+</div>
+{% endblock %}

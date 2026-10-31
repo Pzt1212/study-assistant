@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}注册 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1 class="auth-title">创建账号</h1>
+  <p class="auth-sub">开启你的高效学习之旅</p>
+
+  <form method="post" action="{{ url_for('auth.register') }}" class="form-stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="field">
+      <label for="username">用户名 <span class="req">*</span></label>
+      <input type="text" id="username" name="username" required
+             value="{{ form.username }}" placeholder="2~30 个字符" autofocus>
+    </div>
+    <div class="field">
+      <label for="email">邮箱 <span class="req">*</span></label>
+      <input type="email" id="email" name="email" required
+             value="{{ form.email }}" placeholder="用于登录与找回">
+    </div>
+    <div class="field">
+      <label for="password">密码 <span class="req">*</span></label>
+      <input type="password" id="password" name="password" required
+             placeholder="至少 6 个字符">
+    </div>
+    <div class="field">
+      <label for="confirm">确认密码 <span class="req">*</span></label>
+      <input type="password" id="confirm" name="confirm" required placeholder="再次输入密码">
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">注 册</button>
+  </form>
+
+  <p class="auth-switch">已有账号？<a href="{{ url_for('auth.login') }}">直接登录</a></p>
+</div>
+{% endblock %}
