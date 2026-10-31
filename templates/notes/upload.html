@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}上传笔记 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>上传文件</h1>
+  <p class="muted">支持 txt / md / 常见图片格式，自动提取文本内容。</p>
+</div>
+
+<div class="card upload-card">
+  <form method="post" action="{{ url_for('notes.upload') }}" enctype="multipart/form-data"
+        class="form-stack">
+    <div class="field">
+      <label for="file">选择文件</label>
+      <input type="file" id="file" name="file" required
+             accept=".txt,.md,.markdown,.png,.jpg,.jpeg,.gif,.bmp,.webp">
+    </div>
+    <div class="form-help">
+      <p>支持的格式：</p>
+      <ul>
+        <li><strong>文本</strong> — .txt / .md / .markdown（自动检测编码）</li>
+        <li><strong>图片</strong> — .png / .jpg / .jpeg / .gif / .bmp / .webp（自动 OCR 识别文字）</li>
+      </ul>
+      <p>上传后自动提取文本作为笔记内容，并保留原始文件供查看。</p>
+    </div>
+    <button type="submit" class="btn btn-primary">上传并提取</button>
+    <a href="{{ url_for('notes.index') }}" class="btn btn-ghost">返回列表</a>
+  </form>
+</div>
+{% endblock %}

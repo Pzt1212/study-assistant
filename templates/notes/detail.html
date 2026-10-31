@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ note.title }} - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{{ note.title }}</h1>
+  <div class="head-actions">
+    <a href="{{ url_for('notes.edit', note_id=note.id) }}" class="btn btn-primary">编辑</a>
+    <form method="post" action="{{ url_for('notes.delete', note_id=note.id) }}"
+          class="inline-form" data-confirm="确定删除这篇笔记吗？">
+      <button class="btn btn-danger" type="submit">删除</button>
+    </form>
+    <a href="{{ url_for('notes.index') }}" class="btn btn-ghost">返回列表</a>
+  </div>
+</div>
+
+{% set is_svg = note.file_type == 'svg' %}
+<div class="note-detail card">
+  <div class="note-meta">
+    <span class="badge {% if is_svg %}badge-primary{% endif %}">
+      {{ '手写绘图' if is_svg else note.file_type }}
+    </span>
+    <span>创建：{{ note.created_at }}</span>
+    <span>更新：{{ note.updated_at }}</span>
+    {% if note.source_filename %}
+    <span>源文件：{{ note.source_filename }}</span>
+    {% endif %}
+  </div>
+
+  {% if is_svg %}
+  <!-- 手写笔记：渲染内嵌 SVG（后端仅在 file_type=svg 时放行） -->
+  <div class="note-svg-frame" title="手写绘图笔记">{{ note.content | safe }}</div>
+  {% else %}
+  <div class="note-content">{{ note.content }}</div>
+  {% endif %}
+</div>
+{% endblock %}

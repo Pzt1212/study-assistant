@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from "_icons.html" import ic %}
+{% block title %}笔记 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>我的笔记</h1>
+    <p class="muted">共 {{ notes|length }} 篇 · 随手记录，点滴积累</p>
+  </div>
+  <div class="head-actions">
+    <a href="{{ url_for('notes.new') }}" class="btn btn-primary">新建笔记</a>
+    <a href="{{ url_for('notes.upload') }}" class="btn">上传文件</a>
+  </div>
+</div>
+<form class="inline-search page-filter" method="get" action="{{ url_for('notes.index') }}">
+  <input type="search" name="q" placeholder="搜索笔记标题 / 内容" value="{{ keyword }}" aria-label="搜索笔记">
+  <button class="btn btn-ghost" type="submit">搜索</button>
+  {% if keyword %}<a href="{{ url_for('notes.index') }}" class="btn btn-sm btn-ghost">清除</a>{% endif %}
+</form>
+
+{% if notes %}
+{% set type_meta = {
+  'text':     ('file', '文本'),
+  'markdown': ('markdown', 'Markdown'),
+  'md':       ('markdown', 'Markdown'),
+  'image':    ('image', '图片'),
+  'svg':      ('draw',  '手写绘图')
+} %}
+<div class="portal-grid">
+  {% for note in notes %}
+  {% set em, label = type_meta.get(note.file_type, ('file', note.file_type or '文本')) %}
+  <article class="portal-card">
+    <a href="{{ url_for('notes.detail', note_id=note.id) }}" class="portal-cover" style="text-decoration:none">
+      {{ ic(em, 30) }}
+      <span class="cover-type">{{ label }}</span>
+    </a>
+    <div class="portal-body">
+      <div class="portal-title">
+        <a href="{{ url_for('notes.detail', note_id=note.id) }}">{{ note.title }}</a>
+      </div>
+      <div class="portal-excerpt">
+        {% if note.file_type == 'svg' %}
+        手写绘图笔记（点击查看画板内容）
+        {% else %}
+        {{ note.content[:140] }}{% if note.content|length > 140 %}…{% endif %}
+        {% endif %}
+      </div>
+      <div class="portal-meta">
+        <span>{{ note.updated_at }}</span>
+      </div>
+    </div>
+    <div class="portal-actions">
+      <a href="{{ url_for('notes.edit', note_id=note.id) }}" class="btn btn-sm btn-ghost">编辑</a>
+      <form method="post" action="{{ url_for('notes.delete', note_id=note.id) }}"
+            class="inline-form" data-confirm="确定删除这篇笔记吗？">
+        <button class="btn btn-sm btn-ghost" type="submit" style="color:var(--color-danger)">删除</button>
+      </form>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>{{ '没有找到匹配的笔记。' if keyword else '还没有笔记，点击右上角新建或上传文件。' }}</p>
+</div>
+{% endif %}
+{% endblock %}

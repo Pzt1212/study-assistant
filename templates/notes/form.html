@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ '编辑笔记' if note else '新建笔记' }} - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{{ '编辑笔记' if note else '新建笔记' }}</h1>
+  <div class="head-actions">
+    <a href="{{ url_for('notes.index') }}" class="btn btn-ghost">返回列表</a>
+  </div>
+</div>
+
+<div class="card note-editor">
+  <!-- 文本 / 手写 模式切换 -->
+  {% set is_svg = note and note.file_type == 'svg' %}
+  <div class="note-mode-tabs" id="note-mode-tabs" role="tablist"
+       data-initial="{{ 'handwrite' if is_svg else 'text' }}">
+    <button type="button" class="note-mode-tab is-active" id="tab-text"
+            data-pane="pane-text" role="tab">文本编辑</button>
+    <button type="button" class="note-mode-tab" id="tab-handwrite"
+            data-pane="pane-handwrite" role="tab">手写绘图</button>
+  </div>
+
+  <form method="post"
+        action="{{ url_for('notes.edit', note_id=note.id) if note else url_for('notes.new') }}"
+        class="form-stack" id="note-form">
+    <div class="field">
+      <label for="title">标题</label>
+      <input type="text" id="title" name="title" required value="{{ title }}" placeholder="笔记标题">
+    </div>
+
+    <!-- 文本编辑区 -->
+    <div class="note-mode-pane" id="pane-text">
+      <div class="field">
+        <label for="content">内容</label>
+        <textarea id="content" name="content" rows="16" placeholder="开始记录你的想法…">{{ content }}</textarea>
+      </div>
+    </div>
+
+    <!-- 手写绘图区 -->
+    <div class="note-mode-pane" id="pane-handwrite" hidden>
+      <div class="handwrite-toolbar">
+        <div class="hw-tool-group" title="画笔颜色">
+          <span class="hw-tool-label">颜色</span>
+          <button type="button" class="hw-color is-active" data-color="#1f2430"
+                  style="background:#1f2430" aria-label="黑色"></button>
+          <button type="button" class="hw-color" data-color="#2563eb"
+                  style="background:#2563eb" aria-label="蓝色"></button>
+          <button type="button" class="hw-color" data-color="#e5484d"
+                  style="background:#e5484d" aria-label="红色"></button>
+          <button type="button" class="hw-color" data-color="#16a34a"
+                  style="background:#16a34a" aria-label="绿色"></button>
+          <button type="button" class="hw-color" data-color="#ea580c"
+                  style="background:#ea580c" aria-label="橙色"></button>
+          <button type="button" class="hw-color" data-color="#9333ea"
+                  style="background:#9333ea" aria-label="紫色"></button>
+        </div>
+        <div class="hw-tool-group">
+          <span class="hw-tool-label">粗细</span>
+          <select id="hw-width" class="hw-select" title="画笔粗细">
+            <option value="2">细</option>
+            <option value="4" selected>中</option>
+            <option value="8">粗</option>
+          </select>
+        </div>
+        <div class="hw-tool-group">
+          <button type="button" class="btn btn-sm hw-tool-btn" id="hw-eraser">橡皮擦</button>
+          <button type="button" class="btn btn-sm hw-tool-btn" id="hw-undo">撤销</button>
+          <button type="button" class="btn btn-sm hw-tool-btn" id="hw-clear">清空</button>
+        </div>
+      </div>
+
+      <div class="handwrite-board-wrap">
+        <canvas id="handwrite-canvas" width="900" height="560"></canvas>
+      </div>
+      <p class="form-help handwrite-help">
+        在白色画板上用鼠标或触屏书写；保存后将以 SVG 形式存入笔记正文，可在详情页查看并继续编辑。
+        橡皮擦对已有笔迹生效；「撤销」回退最近一笔。
+      </p>
+    </div>
+
+    <input type="hidden" name="editor_mode" id="editor-mode" value="text">
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" id="btn-save-note">保存</button>
+      <a href="{{ url_for('notes.index') }}" class="btn btn-ghost">取消</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/notes_form.js') }}"></script>
+{% endblock %}
