@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% from "_icons.html" import ic %}
+{% block title %}背景音乐 - 学习助手{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>背景音乐</h1>
+  <p class="muted">在线轻音乐流式播放 + 脑波音频（双耳节拍）分类；脑波音频本地合成，离线可用。</p>
+</div>
+
+<div class="music-layout">
+  <!-- 播放器主面板 -->
+  <div class="card music-player">
+    <div class="music-cover" id="music-cover">
+      <span class="music-note-icon">{{ ic('music', 44) }}</span>
+    </div>
+    <div class="music-info">
+      <div class="music-title" id="music-title">未选择曲目</div>
+      <div class="music-artist" id="music-artist">学习助手</div>
+    </div>
+
+    <!-- 曲目来源/类型标识 -->
+    <div class="music-kind-row" id="music-kind-row">
+      <span class="badge" id="music-kind">--</span>
+      <span class="muted" id="music-kind-desc"></span>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="time-row">
+      <span id="time-current">0:00</span>
+      <span id="time-duration">0:00</span>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="music-controls">
+      <button class="btn btn-icon" id="btn-prev" title="上一首">&#9656;&#9656;|</button>
+      <button class="btn btn-primary btn-icon-lg" id="btn-play" title="播放/暂停">&#9656;</button>
+      <button class="btn btn-icon" id="btn-next" title="下一首">|&#9656;&#9656;</button>
+    </div>
+
+    <div class="music-extra-controls">
+      <label class="volume-label">
+        <span>音量</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5">
+      </label>
+      <div class="loop-controls">
+        <button class="btn btn-sm loop-btn" data-loop="off" id="loop-btn">不循环</button>
+      </div>
+    </div>
+
+    <!-- 加载失败提示（在线曲目） -->
+    <p class="music-error" id="music-error" hidden></p>
+
+    <audio id="audio-player" preload="metadata"></audio>
+  </div>
+
+  <!-- 播放列表：分类筛选 + 搜索 -->
+  <div class="card playlist-card">
+    <h2>播放列表</h2>
+
+    <div class="music-cat-chips" id="music-cat-chips">
+      <button type="button" class="chip is-active" data-category="">全部</button>
+      {% for c in categories %}
+      <button type="button" class="chip" data-category="{{ c.id }}">
+        {% if c.id == 'brainwave' %}{{ ic('brain', 14) }}{% else %}{{ ic('music', 14) }}{% endif %}
+        {{ c.name }}
+        <span class="chip-count">{{ c.count }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <div class="music-search-row">
+      <input type="search" id="music-search" class="filter-search"
+             placeholder="搜索曲目 / 脑波频段…" autocomplete="off">
+    </div>
+
+    <ul class="playlist" id="playlist">
+      <li class="playlist-empty">加载中…</li>
+    </ul>
+
+    <p class="form-help music-help">
+      <strong>脑波音频说明：</strong>双耳节拍（Binaural Beats）通过左右声道频率差引导脑波，
+      建议佩戴耳机使用；由浏览器本地合成，无网络也能播放。<br>
+      <strong>在线曲目：</strong>默认来自公共演示音频源（SoundHelix），可通过环境变量
+      <code>MUSIC_STREAM_URLS</code> 换成自己的在线音乐 API 直链。
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.TRACKS = {{ tracks | tojson }};
+  window.MUSIC_CATEGORIES = {{ categories | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/music.js') }}"></script>
+{% endblock %}
