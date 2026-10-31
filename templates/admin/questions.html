@@ -1,0 +1,74 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}题目管理 · 管理后台{% endblock %}
+{% block admin_crumb %}内容管理 / 题目管理{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <h1>全站题目管理</h1>
+    <p class="muted">查看任意用户的题目，支持按科目与关键字过滤（删除请谨慎）</p>
+  </div>
+  <div class="head-actions">
+    <form class="inline-search" method="get" action="{{ url_for('admin.questions') }}">
+      <input type="hidden" name="subject" value="{{ current_subject }}">
+      <input type="search" name="q" placeholder="搜索题干 / 解析 / 科目" value="{{ keyword }}">
+      <button class="btn btn-ghost" type="submit">搜索</button>
+    </form>
+  </div>
+</div>
+
+<!-- 科目过滤 -->
+<div class="subject-filter admin-filter-bar">
+  <a href="{{ url_for('admin.questions') }}"
+     class="chip {% if not current_subject %}active{% endif %}">全部科目</a>
+  {% for s in subjects %}
+  <a href="{{ url_for('admin.questions', subject=s.subject) }}"
+     class="chip {% if current_subject == s.subject %}active{% endif %}">{{ s.subject }}</a>
+  {% endfor %}
+</div>
+
+<div class="card table-card">
+  {% if questions %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>作者</th>
+        <th>科目</th>
+        <th>题型</th>
+        <th>题干</th>
+        <th>答案</th>
+        <th class="th-actions">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in questions %}
+      <tr>
+        <td>{{ q.id }}</td>
+        <td class="cell-muted">
+          {{ q.owner_username or ('用户 #' ~ q.user_id) }}
+        </td>
+        <td><span class="badge badge-primary">{{ q.subject }}</span></td>
+        <td>
+          <span class="badge">{{ q.question_type or '选择题' }}</span>
+          {% if q.difficulty %}<span class="cell-muted">{{ q.difficulty }}</span>{% endif %}
+        </td>
+        <td class="cell-content">{{ q.content[:60] }}{% if q.content|length > 60 %}…{% endif %}</td>
+        <td class="cell-muted">{{ q.answer }}</td>
+        <td class="td-actions">
+          <form method="post" action="{{ url_for('admin.delete_question', question_id=q.id) }}"
+                class="inline-form" data-confirm="确定删除题目 #{{ q.id }} 吗？（其答题记录将一并删除）">
+            <button class="btn btn-sm btn-danger" type="submit">删除</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <p>{{ '没有找到匹配的题目。' if keyword or current_subject else '全站暂无题目。' }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import ic %}
+{% block title %}数据概览 · 管理后台{% endblock %}
+{% block admin_crumb %}数据概览{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <h1>管理后台</h1>
+    <p class="muted">全站学习数据概览与运营管理（管理员专属）</p>
+  </div>
+</div>
+
+<!-- 统计卡片（带图标 + 分类强调色） -->
+<div class="stat-grid admin-stat-grid">
+  <div class="stat-card admin-stat-card accent-users">
+    <div class="admin-stat-icon">{{ ic('users', 24) }}</div>
+    <div class="admin-stat-body">
+      <div class="stat-value">{{ stats.users }}</div>
+      <div class="stat-label">用户总数</div>
+      <div class="stat-hint">其中管理员 {{ admins }} 人</div>
+    </div>
+  </div>
+  <div class="stat-card admin-stat-card accent-questions">
+    <div class="admin-stat-icon">{{ ic('quiz', 24) }}</div>
+    <div class="admin-stat-body">
+      <div class="stat-value">{{ stats.questions }}</div>
+      <div class="stat-label">题目总数</div>
+      <div class="stat-hint">全站题库题目</div>
+    </div>
+  </div>
+  <div class="stat-card admin-stat-card accent-notes">
+    <div class="admin-stat-icon">{{ ic('file', 24) }}</div>
+    <div class="admin-stat-body">
+      <div class="stat-value">{{ stats.notes }}</div>
+      <div class="stat-label">笔记总数</div>
+      <div class="stat-hint">含上传提取与手写</div>
+    </div>
+  </div>
+  <div class="stat-card admin-stat-card accent-answers">
+    <div class="admin-stat-icon">{{ ic('quiz', 24) }}</div>
+    <div class="admin-stat-body">
+      <div class="stat-value">{{ stats.answer_records }}</div>
+      <div class="stat-label">答题记录</div>
+      <div class="stat-hint">全站刷题作答次数</div>
+    </div>
+  </div>
+  <div class="stat-card admin-stat-card accent-pomodoro">
+    <div class="admin-stat-icon">{{ ic('pomodoro', 24) }}</div>
+    <div class="admin-stat-body">
+      <div class="stat-value">{{ stats.pomodoro_records }}</div>
+      <div class="stat-label">番茄记录</div>
+      <div class="stat-hint">全站累计完成的专注番茄</div>
+    </div>
+  </div>
+</div>
+
+<!-- 趋势 + 最新注册 -->
+<div class="admin-grid2">
+  <div class="card">
+    <div class="card-head"><h2>最近 7 天全站专注</h2></div>
+    {% if site_focus %}
+    <div class="bar-chart compact">
+      {% for item in site_focus %}
+      <div class="bar-col" title="{{ item.day }}：{{ item.count }} 个番茄">
+        <div class="bar-track">
+          <div class="bar-fill"
+               style="height: {{ (item.count * 100 / site_focus_max) if item.count else 4 }}%"
+               {% if item.count == 0 %}data-empty="1"{% endif %}></div>
+        </div>
+        <div class="bar-count">{{ item.count }}</div>
+        <div class="bar-day">{{ item.day }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><p>暂无数据。</p></div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>最新注册用户</h2></div>
+    {% if recent_users %}
+    <ul class="mini-list">
+      {% for u in recent_users %}
+      <li class="mini-list-item">
+        <span class="mini-avatar">{{ u.username[:1]|upper }}</span>
+        <span class="mini-main">
+          <span class="mini-name">{{ u.username }}
+            {% if u.role >= 1 %}<span class="badge admin-badge">{{ role_label(u.role) }}</span>{% endif %}
+          </span>
+          <span class="mini-sub">{{ u.email }}</span>
+        </span>
+        <span class="mini-meta">{{ u.created_at }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><p>暂无用户。</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 管理功能快捷入口 -->
+<div class="card">
+  <div class="card-head"><h2>管理功能</h2></div>
+  <div class="admin-quick-grid">
+    <a class="quick-card" href="{{ url_for('admin.users') }}">
+      <div class="quick-icon quick-icon-1">&#128101;</div>
+      <div class="quick-title">用户管理</div>
+      <div class="quick-desc">共 {{ stats.users }} 人 · 角色 / 删除</div>
+    </a>
+    <a class="quick-card" href="{{ url_for('admin.questions') }}">
+      <div class="quick-icon quick-icon-4">&#128214;</div>
+      <div class="quick-title">题目管理</div>
+      <div class="quick-desc">全站 {{ stats.questions }} 题 · 查看 / 删除</div>
+    </a>
+    <a class="quick-card" href="{{ url_for('admin.notes') }}">
+      <div class="quick-icon quick-icon-5">&#128196;</div>
+      <div class="quick-title">笔记管理</div>
+      <div class="quick-desc">全站 {{ stats.notes }} 篇 · 搜索 / 删除</div>
+    </a>
+    <a class="quick-card" href="{{ url_for('admin.ocr_status') }}">
+      <div class="quick-icon quick-icon-6">&#128065;</div>
+      <div class="quick-title">OCR 状态</div>
+      <div class="quick-desc">识别引擎与配置自检</div>
+    </a>
+  </div>
+</div>
+{% endblock %}

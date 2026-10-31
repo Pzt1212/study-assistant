@@ -1,0 +1,96 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}OCR 服务状态 · 管理后台{% endblock %}
+{% block admin_crumb %}系统 / OCR 服务状态{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <h1>OCR 服务状态</h1>
+    <p class="muted">当前识别引擎与各免费 / 本地引擎的配置情况（密钥只显示脱敏值）</p>
+  </div>
+</div>
+
+<!-- 当前生效引擎 -->
+<div class="card">
+  <div class="card-head"><h2>当前生效引擎</h2></div>
+  <p class="ocr-status-current">
+    <span class="status-dot dot-ok"></span>{{ status.provider_label }}
+  </p>
+  <p class="muted">
+    切换方式：在 <code>config.py</code> 中修改 <code>OCR_PROVIDER</code>，
+    或通过环境变量 <code>OCR_PROVIDER</code> 覆盖后重启服务。
+  </p>
+</div>
+
+<!-- 各引擎配置 -->
+<div class="ocr-status-grid">
+  <div class="card">
+    <h3 class="ocr-status-title">本地 Tesseract（local · 印刷体）</h3>
+    <ul class="status-list">
+      <li><span class="status-key">依赖（pytesseract/Pillow）</span>
+        <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.tesseract_deps_ok else 'dot-warn' }}"></span>
+        {{ '已安装' if status.tesseract_deps_ok else '未安装' }}</span></li>
+      <li><span class="status-key">识别语言</span><span class="status-val">{{ status.ocr_lang }}</span></li>
+      <li><span class="status-key">引擎可用</span>
+        <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.tesseract_available else 'dot-warn' }}"></span>
+        {{ '可用' if status.tesseract_available else '未找到（可运行 tools/setup_tesseract.py 自动内置）' }}</span></li>
+      <li><span class="status-key">生效路径</span><span class="status-val" title="{{ status.tesseract_resolved }}">{{ status.tesseract_resolved or '（未解析到）' }}</span></li>
+      <li><span class="status-key">内置打包目录</span><span class="status-val">{{ 'bin/tesseract/' }}</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 class="ocr-status-title">手写体插件（rapidocr）</h3>
+    <ul class="status-list">
+      <li><span class="status-key">插件（rapidocr-onnxruntime）</span>
+        <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.handwriting_ok else 'dot-warn' }}"></span>
+        {{ '已安装' if status.handwriting_ok else '未安装' }}</span></li>
+      <li><span class="status-key">安装命令</span><span class="status-val"><code>pip install -r requirements-handwriting.txt</code></span></li>
+      <li><span class="status-key">缺失时策略</span><span class="status-val">自动降级本地 Tesseract(psm6) / 友好提示</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 class="ocr-status-title">OCR.space（ocrspace）</h3>
+    <ul class="status-list">
+      <li><span class="status-key">API Key</span>
+        <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.ocrspace_configured else 'dot-off' }}"></span>
+        {{ status.ocrspace_masked if status.ocrspace_configured else '未配置' }}</span></li>
+      <li><span class="status-key">注册地址</span><span class="status-val">https://ocr.space/ocrapi</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 class="ocr-status-title">百度智能云 OCR（baidu）</h3>
+    <ul class="status-list">
+      <li><span class="status-key">API Key</span>
+        <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.baidu_configured else 'dot-off' }}"></span>
+        {{ status.baidu_api_key if status.baidu_configured else '未配置' }}</span></li>
+      <li><span class="status-key">Secret Key</span>
+        <span class="status-val">{{ status.baidu_secret_key if status.baidu_configured else '未配置' }}</span></li>
+      <li><span class="status-key">申请地址</span><span class="status-val">https://cloud.baidu.com/product/ocr</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 class="ocr-status-title">自定义在线 API（online）</h3>
+    <ul class="status-list">
+      <li><span class="status-key">接口地址</span><span class="status-val">{{ status.custom_url }}</span></li>
+      <li><span class="status-key">API Key</span>
+        <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.custom_configured else 'dot-off' }}"></span>
+        {{ '已配置' if status.custom_configured else '未配置' }}</span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>在线题库（wkapi）</h2></div>
+  <ul class="status-list">
+    <li><span class="status-key">wkapi 在线问答</span>
+      <span class="status-val"><span class="status-dot {{ 'dot-ok' if status.wkapi_enabled else 'dot-off' }}"></span>
+      {{ '已启用' if status.wkapi_enabled else '已禁用' }}</span></li>
+    <li><span class="status-key">接口地址</span><span class="status-val">http://api.wkexam.com/api/</span></li>
+    <li><span class="status-key">开关配置</span><span class="status-val"><code>WKAPI_ENABLED</code></span></li>
+  </ul>
+</div>
+{% endblock %}

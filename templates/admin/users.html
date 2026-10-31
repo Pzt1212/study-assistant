@@ -1,0 +1,92 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}用户管理 · 管理后台{% endblock %}
+{% block admin_crumb %}内容管理 / 用户管理{% endblock %}
+
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <h1>用户管理</h1>
+    <p class="muted">查看全站用户及其内容量，设置 / 取消管理员或删除账号</p>
+  </div>
+  <div class="head-actions">
+    <form class="inline-search" method="get" action="{{ url_for('admin.users') }}">
+      <input type="search" name="q" placeholder="搜索用户名 / 邮箱" value="{{ keyword }}">
+      <button class="btn btn-ghost" type="submit">搜索</button>
+    </form>
+  </div>
+</div>
+
+{% if keyword %}<p class="admin-count-note" style="margin-bottom: 12px;">搜索“{{ keyword }}”共 {{ users|length }} 条结果</p>{% endif %}
+
+<div class="card table-card">
+  {% if users %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>用户</th>
+        <th>角色</th>
+        <th>题目</th>
+        <th>笔记</th>
+        <th>答题</th>
+        <th>番茄</th>
+        <th>注册时间</th>
+        <th class="th-actions">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>
+          <div class="cell-strong">
+            {{ u.username }}
+            {% if u.id == current_user.id %}<span class="cell-muted">（当前账号）</span>{% endif %}
+          </div>
+          <div class="cell-muted">{{ u.email }}</div>
+        </td>
+        <td>
+          {% if u.role >= 2 %}<span class="badge admin-badge">{{ role_label(u.role) }}</span>
+          {% elif u.role == 1 %}<span class="badge">{{ role_label(u.role) }}</span>
+          {% else %}<span class="badge">普通用户</span>{% endif %}
+        </td>
+        <td>{{ u.question_count }}</td>
+        <td>{{ u.note_count }}</td>
+        <td>{{ u.answer_count }}</td>
+        <td>{{ u.pomodoro_count }}</td>
+        <td class="cell-muted">{{ u.created_at }}</td>
+        <td class="td-actions">
+          {% if u.id == current_user.id %}
+          <span class="cell-muted">—</span>
+          {% elif current_user.role >= 3 %}
+          <form method="post" action="{{ url_for('admin.set_role', user_id=u.id) }}" class="inline-form role-set-form">
+            <select name="role" class="role-select" title="设置角色层级">
+              <option value="0" {% if u.role == 0 %}selected{% endif %}>普通</option>
+              <option value="1" {% if u.role == 1 %}selected{% endif %}>协管</option>
+              <option value="2" {% if u.role == 2 %}selected{% endif %}>管理员</option>
+              <option value="3" {% if u.role == 3 %}selected{% endif %}>超管</option>
+            </select>
+            <button class="btn btn-sm btn-ghost" type="submit">保存</button>
+          </form>
+          {% else %}
+          {% if u.role >= 3 %}
+          <span class="cell-muted">超管账号</span>
+          {% else %}
+          <form method="post" action="{{ url_for('admin.delete_user', user_id=u.id) }}"
+                class="inline-form" data-confirm="确定删除用户「{{ u.username }}」及其全部数据吗？此操作不可恢复！">
+            <button class="btn btn-sm btn-danger" type="submit">删除</button>
+          </form>
+          {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <p>{{ '没有找到匹配的用户。' if keyword else '暂无用户。' }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

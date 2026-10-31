@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}管理后台 · 学习助手{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body class="admin-body">
+{% set ep = request.endpoint or '' %}
+<div class="admin-shell">
+
+  <!-- 移动端遮罩 -->
+  <div class="admin-backdrop" id="adminBackdrop"></div>
+
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-brand">
+      <span class="admin-brand-mark">学</span>
+      <div class="admin-brand-text">
+        <strong>学习助手</strong>
+        <span>管理端 · ADMIN</span>
+      </div>
+    </div>
+
+    <nav class="admin-nav" aria-label="管理端导航">
+      {% if current_user.role >= 2 %}
+      <div class="admin-nav-group">概览</div>
+      <a class="admin-nav-link {% if ep == 'admin.index' %}is-active{% endif %}"
+         href="{{ url_for('admin.index') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        数据概览
+      </a>
+      {% endif %}
+
+      <div class="admin-nav-group">内容管理</div>
+      {% if current_user.role >= 2 %}
+      <a class="admin-nav-link {% if ep == 'admin.users' %}is-active{% endif %}"
+         href="{{ url_for('admin.users') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        用户管理
+      </a>
+      {% endif %}
+      {% if current_user.role >= 1 %}
+      <a class="admin-nav-link {% if ep == 'admin.questions' %}is-active{% endif %}"
+         href="{{ url_for('admin.questions') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        题目管理
+      </a>
+      <a class="admin-nav-link {% if ep == 'admin.notes' %}is-active{% endif %}"
+         href="{{ url_for('admin.notes') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+        笔记管理
+      </a>
+      {% endif %}
+
+      {% if current_user.role >= 2 %}
+      <div class="admin-nav-group">系统</div>
+      <a class="admin-nav-link {% if ep == 'admin.ocr_status' %}is-active{% endif %}"
+         href="{{ url_for('admin.ocr_status') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
+        OCR 服务状态
+      </a>
+      {% endif %}
+    </nav>
+
+    <div class="admin-sidebar-foot">
+      <a class="admin-foot-link" href="{{ url_for('main.dashboard') }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        返回学习前台
+      </a>
+      <form method="post" action="{{ url_for('auth.logout') }}" class="logout-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="admin-foot-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          退出登录
+        </button>
+      </form>
+      <div class="admin-foot-user">当前账号：{{ current_user.username }}（{{ role_label(current_user.role) }}）</div>
+    </div>
+  </aside>
+
+  <!-- ============ 主区 ============ -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button type="button" class="admin-menu-btn" id="adminMenuBtn"
+              aria-label="打开菜单">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
+      <div class="admin-topbar-title">
+        管理后台
+        <span class="admin-topbar-crumb">{% block admin_crumb %}{% endblock %}</span>
+      </div>
+
+      <div class="admin-topbar-right">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-ghost btn-sm">返回前台</a>
+        <div class="admin-user-chip">
+          <span class="admin-avatar">{{ current_user.username[:1]|upper }}</span>
+          <span class="admin-user-name">{{ current_user.username }}</span>
+          <span class="admin-user-role">{{ role_label(current_user.role) }}</span>
+        </div>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="logout-form logout-form-top">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-ghost btn-sm" title="退出登录">退出</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      {# 面包屑导航（首页可点击，当前页高亮显示） #}
+      {% set crumb_titles = {
+        'admin.index': '数据概览',
+        'admin.users': '用户管理',
+        'admin.questions': '题目管理',
+        'admin.notes': '笔记管理',
+        'admin.ocr_status': 'OCR 服务状态',
+      } %}
+      <nav class="admin-breadcrumb" aria-label="面包屑导航">
+        <a class="admin-breadcrumb-link {% if request.endpoint == 'admin.index' %}is-current{% endif %}"
+           href="{{ url_for('admin.index') }}">管理后台</a>
+        {% if request.endpoint and request.endpoint != 'admin.index' %}
+        <span class="admin-breadcrumb-sep">/</span>
+        <span class="admin-breadcrumb-link is-current">{{ crumb_titles.get(request.endpoint, '') }}</span>
+        {% endif %}
+      </nav>
+
+      <!-- Flash 消息提示 -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="admin-footer">
+      学习助手 · 管理端（/admin）· 仅限管理员访问 · 数据与配置请谨慎操作
+    </footer>
+  </div>
+</div>
+
+<!-- 管理端脚本（style.css 通用组件脚本 app.js 一并引入） -->
+<script src="{{ url_for('static', filename='js/csrf.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
