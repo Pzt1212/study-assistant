@@ -48,7 +48,8 @@ scripts/tunnel/config-named-active.yml
 scripts/tunnel/*.log
 
 # 本地视频与下载脚本（含 B 站下载工具，体积大且不适合分发，不入库）
-video/
+# 只忽略根目录下的 video/，避免误伤 templates/video/ 等代码目录
+/video/
 
 # 数据库文件（SQLite 及其 WAL / SHM 辅助文件）
 data/

@@ -4,11 +4,11 @@
 
 后端 Flask + SQLite，前端原生 HTML/CSS/JS（零 CDN 依赖），一条命令即可在本地跑起来。
 
-> **💡 下载与运行指南**
-> 本项目为纯开源的 Python Web 应用，GitHub 的 `Download ZIP` 只会下载源代码，**不包含直接双击运行的 .exe 文件**。
-> - **Windows 普通用户**：请下载源码解压，确保电脑装有 Python 3.8+，双击 `scripts\start.vbs` 即可在后台静默启动，然后浏览器访问 `http://127.0.0.1:5000`。
-> - **开发者**：请按照下方的 [安装步骤](#安装步骤) 进行环境配置。
-> - *(注：如果你在找打包好的 exe 单文件，本项目目前暂不提供。)*
+> **两种使用方式（v1.1.0 起）**
+> - **免安装 · 单机桌面版（推荐普通用户）**：到 [Releases](https://github.com/Pzt1212/study-assistant/releases) 下载 `学习助手-单机版.zip`，解压后双击 `学习助手.exe`，自动打开浏览器即用。**不用装 Python、不用联网、不用登录**。详见 [单机桌面版](#单机桌面版免安装-exe)。
+> - **源码版（开发者 / 多用户）**：`Download ZIP` 只包含源代码，需要 Python 3.8+；按下方 [安装步骤](#安装步骤) 配置，或在 Windows 上双击 `scripts\start.vbs` 后台启动后访问 `http://127.0.0.1:5000`。
+>
+> 两个版本共用同一套代码：单机版是源码版的 PyInstaller 打包产物，功能一致，区别只是把「注册 / 登录 / 多用户」换成了单人自动登录。
 
 ## 界面预览
 
@@ -23,6 +23,8 @@
 ![管理后台](docs/screenshots/05-admin.png)
 
 > 以上截图来自项目本地运行效果。首次使用请先注册账号；需要进入管理后台时，用 `python tools/create_admin.py` 把该账号提升为管理员。
+>
+> 注：截图拍摄于 v1.0.x 界面。**v1.1.0 起仪表盘已改为「独立功能按钮网格」布局**（去掉分组侧边栏，顶栏控件拆成独立按钮），其余页面与截图一致。
 
 ## 功能列表
 
@@ -44,6 +46,69 @@
 | 全局搜索 | 搜索笔记标题/内容、题目题干/解析/科目，结果分组展示 |
 | 运行管理 | 一键后台启动 / 停止 / 状态查看（`manage.py` 与配套脚本），管理员账户工具，健康检查接口 |
 | 内网穿透 | Cloudflare Tunnel 免费方案：`scripts\tunnel_start.bat` 一键启动（Quick 隧道免登录，分配 `*.trycloudflare.com` 临时公网地址）；支持自定义域名命名隧道（详见 `docs/TUNNEL.md`） |
+| 单机桌面版 | **v1.1.0 新增**：Windows 免安装绿色版，双击 `学习助手.exe` 自动开浏览器即用，单人免登录，内置中文 OCR，数据全留本机（详见下方章节） |
+
+## 单机桌面版（免安装 exe）
+
+> v1.1.0 新增。适合只想「双击就用」、不想配环境的 Windows 用户。
+
+**下载**：前往 [GitHub Releases](https://github.com/Pzt1212/study-assistant/releases) 下载 `学习助手-单机版.zip`（约 227 MB，已内置简体中文 OCR 引擎），解压到任意文件夹即可。
+
+**使用**：
+
+1. 双击文件夹里的 `学习助手.exe`；
+2. 程序自动启动本地服务并打开浏览器访问 `http://127.0.0.1:5000`（没自动弹出就手动打开该地址）；
+3. **单人模式已自动登录**，打开即是你的工作台，无需账号密码；
+4. 关闭黑色控制台窗口（或按 `Ctrl+C`）即退出。
+
+| 特性 | 说明 |
+|------|------|
+| 免环境 | 不需要 Python、不需要装依赖、不需要装 Tesseract；内置印刷体中英文 OCR |
+| 免登录 | 首次启动自动创建管理员账号（默认用户名 `user`，随机 6 位密码写入 `data/账号信息.txt`），之后自动登录；注册入口已禁用以保持单用户 |
+| 绿色便携 | 数据库、上传文件、日志、媒体全部落在 exe 旁目录；备份 = 复制整个文件夹，卸载 = 删除整个文件夹 |
+| 离线可用 | 除「在线轻音乐 / 在线题库 / 媒体库（R2）」等需外部服务的功能外，全部功能本机运行、不外发数据 |
+| 不打架 | 已在运行时再次双击只会打开浏览器，不会启动第二个实例；5000 端口被别的程序占用时自动改用 5001+ |
+
+目录结构（解压后）：
+
+```
+学习助手单机版/
+├── 学习助手.exe          # 双击启动
+├── 使用说明.txt          # 随包说明
+├── _internal/            # 运行时依赖（请勿删除）
+├── data/                 # 数据库 + 账号信息.txt + 媒体存储
+├── uploads/              # 上传文件
+└── logs/                 # 运行日志
+```
+
+重置数据 / 账号：退出程序后删除 `data/`，下次启动会重新初始化。
+自定义账号：启动前设置环境变量 `STANDALONE_USERNAME` / `STANDALONE_PASSWORD`。
+
+**与源码版的区别**：单机版为单人使用（禁用注册）；媒体库等需外部云配置的功能默认不可用；其余功能一致。
+
+<details>
+<summary>从源码自行打包（开发者）</summary>
+
+依赖：Windows + Python 3.9~3.14、`pip install pyinstaller`、`pip install -r requirements.txt`。
+若要内置中文 OCR，先执行 `python tools/setup_tesseract.py` 生成 `bin/tesseract/`
+（该目录体积大，被 `.gitignore` 忽略，不在仓库里；也可以从 `packaging/standalone.spec` 的 `datas` 中移除）。
+
+```bash
+# 在项目根目录执行
+python -m PyInstaller --noconfirm --distpath dist/exe-dist --workpath build-exe packaging/standalone.spec
+```
+
+产物在 `dist/exe-dist/学习助手/`（`学习助手.exe` + `_internal/`）。把该目录复制成一个新的发布文件夹，
+放入 `packaging/使用说明.txt`，再压缩成 zip 即可分发。
+
+注意事项：
+
+- **发布前必须确认文件夹里没有 `data/`、`logs/`、`uploads/`**——这些是本机运行后才生成的，
+  含个人数据库与 `账号信息.txt`，绝不能随包发布；
+- zip 约 227 MB，**不要提交进 git**（GitHub 单文件上限 100 MB），应上传到 Release 资产；
+- `onedir` 模式下 `_internal/` 与 exe 必须保持同级，不能只单独拷贝 exe。
+
+</details>
 
 ## 环境要求
 
@@ -238,7 +303,8 @@ GET {你的地址}?q=题目内容&token={令牌}
 
 ```
 study-assistant/
-├── app.py                    # 应用入口 & 工厂函数 create_app
+├── app.py                    # 应用入口 & 工厂函数 create_app（Web / 多用户版）
+├── standalone.py             # 单机桌面版启动入口（PyInstaller 打包目标）
 ├── config.py                 # 配置中心（含 R2 / OCR / 在线题库配置）
 ├── db.py                     # SQLite 连接管理与建表 SQL
 ├── models.py                 # 数据访问层（所有 SQL 集中于此）
@@ -297,7 +363,7 @@ study-assistant/
 ├── static/                   # 静态资源
 │   ├── css/                  # style.css / admin.css
 │   ├── js/                   # app / pomodoro / timer / music / quiz / admin
-│   ├── img/                  # 图片与题图
+│   ├── img/                  # 图片与题图（app_icon.ico 为桌面版图标）
 │   ├── music/                # 占位音乐（可替换）
 │   └── vendor/               # 第三方前端库（本地引入，无 CDN）
 ├── docs/                     # 文档与截图
@@ -322,6 +388,9 @@ study-assistant/
 │   └── status_server.py          # 【历史】查看状态，请用 manage.py status
 ├── scripts/                  # 启动 / 停止 / 内网穿透脚本（双击入口都在这里）
 │   └── tunnel/               # Cloudflare Tunnel 配置模板与启动脚本
+├── packaging/                # 桌面版打包配置
+│   ├── standalone.spec       # PyInstaller onedir spec
+│   └── 使用说明.txt          # 随发布包附带的用户说明
 ├── uploads/                  # 用户上传文件（gitignored）
 ├── data/                     # SQLite 数据库与密钥（gitignored）
 └── logs/                     # 运行日志（gitignored）
@@ -351,6 +420,7 @@ study-assistant/
 | `R2_BUCKET` / `R2_BACKUP_BUCKET` | `study-media` / 空 | 主桶 / 备份桶 |
 | `TRUST_PROXY_HEADERS` | `0` | 位于反向代理或隧道后时置 `1` |
 | `PUBLIC_BASE_URL` | 空 | 对外访问地址（生成绝对链接用） |
+| `STANDALONE_USERNAME` / `STANDALONE_PASSWORD` | `user` / 随机 6 位 | **仅单机桌面版**：首次启动创建的账号；不设密码则随机生成并写入 `data/账号信息.txt` |
 
 ## 部署与内网穿透
 
@@ -382,6 +452,7 @@ study-assistant/
 | 异步任务 | 内置线程队列（默认）/ Celery + Redis（可选） |
 | 前端 | 原生 HTML + CSS + JavaScript（无框架，零 CDN 依赖） |
 | 音频播放 | HTML5 `<audio>` + Web Audio API 提示音 |
+| 桌面打包 | PyInstaller（onedir，Windows 免安装绿色版；见 `packaging/standalone.spec`） |
 
 ## 开源许可声明
 

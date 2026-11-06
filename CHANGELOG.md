@@ -3,6 +3,39 @@
 本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/) 规范，格式参考
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
 
+## [1.1.0] - 2026-11-06
+
+### 新增（单机桌面版 · 免安装 exe）
+- **`standalone.py`**：单机单人版启动入口。数据（SQLite / uploads / logs / 媒体存储）全部重定向到
+  exe 旁目录，整个文件夹复制到任意位置即可运行、删除即完全卸载；首次启动自动创建管理员账号
+  （默认 `user` + 随机 6 位密码，写入 `data/账号信息.txt`），此后 `before_request` 自动登录、
+  注册入口返回 403 以保持单用户；启动后自动打开系统默认浏览器。
+- **端口与实例管理**：5000 被占用时先请求 `/api/health`——若已是本程序则直接打开浏览器而不重复启动，
+  否则自动顺延到 5001+ 的可用端口；控制台会打印实际访问地址。
+- **`packaging/standalone.spec`**：PyInstaller **onedir** 打包，把 `templates/`、`static/`、
+  内置 Tesseract（中英文印刷体 OCR）打进 `_internal`；图标为新增的 `static/img/app_icon.ico`。
+  onedir 启动快、杀软误报率低于 onefile，保留控制台窗口便于查看日志。
+- **随包 `使用说明.txt`**：面向普通用户的下载、启动、账号、数据目录、常见问题与版本差异说明。
+
+### 变更（界面重设计）
+- **去掉分组侧边栏**：`templates/base.html` 改为「独立控件顶栏」（品牌 / 搜索 / 设置 / 头像 / 退出各自独立）；
+  `templates/dashboard.html` 重写为问候区 + 4 张 KPI 卡 + 全部功能独立按钮网格，番茄钟为双倍宽主瓦片；
+  `static/css/style.css` 追加 v3 样式段（`--c` 变量 + `color-mix`，图标色块自动适配暗色主题）。
+- `templates/video/index.html` 移除已废弃的面包屑 block。
+
+### 文档
+- **README 顶部「下载与运行指南」改写**：不再声称「暂不提供 exe」，改为「单机桌面版 / 源码版」双入口，
+  新增「单机桌面版（免安装 exe）」章节（下载、使用、特性、目录、账号重置、与源码版差异）。
+- README 功能表、目录结构、环境变量表、技术栈表同步补充桌面版条目；界面预览注明截图拍摄于 v1.0.x 布局。
+- README「单机桌面版」章节增加「从源码自行打包」折叠小节（构建命令、依赖、隐私检查、Release 分发说明）；
+  新增 `packaging/使用说明.txt` 作为随包用户说明的源文件。
+
+### 说明
+- 打包产物（`学习助手-单机版.zip`，约 227 MB）**不纳入 git 仓库**（GitHub 单文件上限 100 MB），
+  改由 **GitHub Release** 分发；仓库只保留可复现打包的源码与配置。
+
+---
+
 ## [1.0.1] - 2026-10-31
 
 ### 修复（Windows 启动链路 · 致命）
