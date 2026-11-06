@@ -5,7 +5,7 @@
 后端 Flask + SQLite，前端原生 HTML/CSS/JS（零 CDN 依赖），一条命令即可在本地跑起来。
 
 > **两种使用方式（v1.1.0 起）**
-> - **免安装 · 单机桌面版（推荐普通用户）**：到 [Releases](https://github.com/Pzt1212/study-assistant/releases) 下载 `学习助手-单机版.zip`，解压后双击 `学习助手.exe`，自动打开浏览器即用。**不用装 Python、不用联网、不用登录**。详见 [单机桌面版](#单机桌面版免安装-exe)。
+> - **免安装 · 单机桌面版（推荐普通用户）**：到 [Releases](https://github.com/Pzt1212/study-assistant/releases) 下载 `study-assistant-standalone-v1.1.0.zip`，解压后双击 `学习助手.exe`，自动打开浏览器即用。**不用装 Python、不用联网、不用登录**。详见 [单机桌面版](#单机桌面版免安装-exe)。
 > - **源码版（开发者 / 多用户）**：`Download ZIP` 只包含源代码，需要 Python 3.8+；按下方 [安装步骤](#安装步骤) 配置，或在 Windows 上双击 `scripts\start.vbs` 后台启动后访问 `http://127.0.0.1:5000`。
 >
 > 两个版本共用同一套代码：单机版是源码版的 PyInstaller 打包产物，功能一致，区别只是把「注册 / 登录 / 多用户」换成了单人自动登录。
@@ -52,7 +52,9 @@
 
 > v1.1.0 新增。适合只想「双击就用」、不想配环境的 Windows 用户。
 
-**下载**：前往 [GitHub Releases](https://github.com/Pzt1212/study-assistant/releases) 下载 `学习助手-单机版.zip`（约 227 MB，已内置简体中文 OCR 引擎），解压到任意文件夹即可。
+**下载**：前往 [GitHub Releases](https://github.com/Pzt1212/study-assistant/releases) 下载 `study-assistant-standalone-v1.1.0.zip`（约 227 MB，已内置简体中文 OCR 引擎），解压到任意文件夹即可。
+
+> GitHub Release 资产名只接受 ASCII 字符，所以下载页显示英文名；解压出来的文件夹仍是中文名 `学习助手单机版/`，本地备份文件可随意命名。
 
 **使用**：
 

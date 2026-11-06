@@ -31,7 +31,7 @@
   新增 `packaging/使用说明.txt` 作为随包用户说明的源文件。
 
 ### 说明
-- 打包产物（`学习助手-单机版.zip`，约 227 MB）**不纳入 git 仓库**（GitHub 单文件上限 100 MB），
+- 打包产物（`study-assistant-standalone-v1.1.0.zip`，约 227 MB）**不纳入 git 仓库**（GitHub 单文件上限 100 MB），
   改由 **GitHub Release** 分发；仓库只保留可复现打包的源码与配置。
 
 ---
