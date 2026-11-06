@@ -1492,7 +1492,6 @@ html, body { height: auto; min-height: 100%; }
 .app-main {
   flex: 1;
   min-width: 0;
-  margin-left: 236px;
   display: flex;
   flex-direction: column;
 }
@@ -1813,3 +1812,268 @@ html, body { height: auto; min-height: 100%; }
   margin-bottom: 2px;
 }
 .question-form-card { max-width: 860px; }
+
+/* ============================================================
+   v3 UI 重设计：独立控件顶栏 + 独立功能按钮网格
+   ============================================================ */
+
+/* ---------- 顶栏（品牌 / 搜索 / 设置 / 头像 / 退出 各自独立） ---------- */
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.topbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.topbar-brand:hover { color: var(--text); }
+.topbar-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--link);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.topbar-logo .ic-svg svg { width: 17px; height: 17px; }
+.topbar-name { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+
+.topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 18px;
+  padding: 0 14px;
+  height: 36px;
+  width: 300px;
+  max-width: 38vw;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.topbar-search:focus-within { border-color: var(--link); background: var(--surface); }
+.topbar-search svg { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
+.topbar-search input {
+  border: 0;
+  background: none;
+  outline: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  width: 100%;
+  min-width: 0;
+}
+.topbar-search input::placeholder { color: var(--muted); }
+
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.topbar-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.topbar-icon-btn svg { width: 17px; height: 17px; }
+.topbar-icon-btn:hover { color: var(--text); border-color: color-mix(in srgb, var(--text) 25%, var(--border)); }
+.topbar-avatar { display: inline-flex; align-items: center; line-height: 0; border-radius: 50%; }
+.topbar-avatar img { border-radius: 50%; display: block; }
+.topbar-logout-form { display: inline; margin: 0; padding: 0; }
+button.topbar-logout {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+button.topbar-logout:hover { color: var(--text); border-color: color-mix(in srgb, var(--text) 25%, var(--border)); }
+
+/* ---------- 首页：问候区 ---------- */
+.dash-greet {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.dash-greet h1 { font-size: 24px; font-weight: 750; letter-spacing: -0.02em; line-height: 1.2; margin: 0; }
+.dash-greet .muted { margin: 4px 0 0; font-size: 13px; }
+.dash-greet-date {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 17px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12.5px;
+  flex-shrink: 0;
+}
+
+/* ---------- 首页：KPI 指标卡（4 张独立） ---------- */
+.dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  min-width: 0;
+}
+.kpi-ic {
+  --c: var(--link);
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--c) 12%, var(--surface));
+  color: var(--c);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.kpi-card .kpi-value { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.kpi-card .kpi-label { font-size: 12px; color: var(--muted); }
+
+/* ---------- 首页：全部功能 · 独立按钮网格 ---------- */
+.func-section { margin-bottom: 22px; }
+.func-head { margin: 0 0 12px; }
+.func-head h2 { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+.func-head p { font-size: 12.5px; color: var(--muted); margin: 3px 0 0; }
+.func-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+  gap: 14px;
+}
+.func-tile {
+  --c: #5a6072;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px 14px 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  text-decoration: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  min-width: 0;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.func-tile:hover {
+  border-color: color-mix(in srgb, var(--c) 45%, var(--border));
+  box-shadow: var(--shadow-hover);
+  color: var(--text);
+  text-decoration: none;
+}
+.func-ic {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--c) 12%, var(--surface));
+  color: var(--c);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.func-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.func-title { font-size: 14px; font-weight: 650; }
+.func-desc { font-size: 11.5px; color: var(--muted); }
+/* 各功能独立强调色 */
+.ft-pomodoro { --c: #e2574c; }
+.ft-timer    { --c: #0e9384; }
+.ft-music    { --c: #7c5ce0; }
+.ft-video    { --c: #2e7dd1; }
+.ft-media    { --c: #c9881b; }
+.ft-quiz     { --c: #2f9e62; }
+.ft-bank     { --c: #2f6feb; }
+.ft-notes    { --c: #5a6072; }
+.ft-ocr      { --c: #c2447c; }
+.ft-forum    { --c: #e8862e; }
+.ft-admin    { --c: #3f4552; }
+.ft-settings { --c: #7a8399; }
+
+/* 主按钮：番茄钟（双倍宽，横排 + 右侧实时状态） */
+.func-hero {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 13px;
+  padding: 0 16px;
+  min-height: 108px;
+}
+.func-stat { margin-left: auto; text-align: right; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; }
+.func-stat .v { font-size: 24px; font-weight: 750; letter-spacing: -0.02em; color: var(--c); font-variant-numeric: tabular-nums; line-height: 1.15; }
+.func-stat .l { font-size: 11px; color: var(--muted); }
+
+/* ---------- 首页：图表胶囊 + 建议卡按钮 ---------- */
+.chart-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--link) 10%, var(--surface));
+  color: var(--link);
+  font-size: 11.5px;
+  font-weight: 550;
+}
+.bar-fill.bar-today { background: var(--link); }
+.advice-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.advice-actions .btn { width: 100%; justify-content: center; text-align: center; }
+
+/* ---------- 顶栏与网格的窄屏适配 ---------- */
+@media (max-width: 960px) {
+  .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+  .func-hero { grid-column: auto; }
+  .func-stat .v { font-size: 20px; }
+}
+@media (max-width: 720px) {
+  .app-topbar { padding: 0 14px; gap: 10px; }
+  .topbar-search { display: none; }
+  .topbar-name { display: none; }
+  button.topbar-logout { padding: 0 10px; }
+  .dash-greet-date { display: none; }
+  .func-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .func-hero { flex-direction: column; align-items: flex-start; gap: 10px; padding: 15px 14px 13px; min-height: 0; }
+  .func-stat { margin-left: 0; text-align: left; }
+}

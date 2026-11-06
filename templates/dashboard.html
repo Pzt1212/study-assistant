@@ -3,42 +3,128 @@
 {% block title %}首页 - 学习助手{% endblock %}
 
 {% block content %}
-<div class="page-head">
-  <div>
+{# ===== 问候区 ===== #}
+<div class="dash-greet">
+  <div class="dash-greet-txt">
     <h1>你好，{{ current_user.username }}</h1>
-    <span class="muted">今天也要专注学习、持续积累。</span>
+    <p class="muted">今天也要专注学习、持续积累</p>
+  </div>
+  <div class="dash-greet-date" id="dashDate" aria-hidden="true"></div>
+</div>
+
+{# ===== KPI 指标卡（4 张各自独立） ===== #}
+<div class="dash-kpis">
+  <div class="kpi-card">
+    <span class="kpi-ic" style="--c:#e2574c">{{ ic('pomodoro', 21) }}</span>
+    <div>
+      <div class="kpi-value">{{ today_focus }}</div>
+      <div class="kpi-label">今日番茄 · 25 分钟/个</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-ic" style="--c:#2f9e62">{{ ic('file', 21) }}</span>
+    <div>
+      <div class="kpi-value">{{ note_count }}</div>
+      <div class="kpi-label">笔记总数</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-ic" style="--c:#c9881b">{{ ic('quiz', 21) }}</span>
+    <div>
+      <div class="kpi-value">{{ question_count }}</div>
+      <div class="kpi-label">题目总数</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-ic" style="--c:#7c5ce0">{{ ic('brain', 21) }}</span>
+    <div>
+      <div class="kpi-value">{{ "%.1f"|format(quiz_stats.accuracy) }}%</div>
+      <div class="kpi-label">刷题正确率 · 已答 {{ quiz_stats.total }} 题</div>
+    </div>
   </div>
 </div>
 
-<!-- 紧凑 KPI 指标条 -->
-<div class="kpi-strip">
-  <div class="kpi-item">
-    <div class="kpi-value">{{ today_focus }}</div>
-    <div class="kpi-label">今日番茄 · 25 分钟/个</div>
+{# ===== 全部功能：每个按钮相互独立 ===== #}
+<section class="func-section">
+  <div class="func-head">
+    <h2>全部功能</h2>
+    <p>每个入口相互独立，可单独使用</p>
   </div>
-  <div class="kpi-item">
-    <div class="kpi-value">{{ note_count }}</div>
-    <div class="kpi-label">笔记总数</div>
+  <div class="func-grid">
+    {# 主按钮：番茄钟（双倍宽，带今日状态） #}
+    <a class="func-tile func-hero ft-pomodoro" href="{{ url_for('pomodoro.index') }}">
+      <span class="func-ic">{{ ic('pomodoro', 21) }}</span>
+      <span class="func-body">
+        <span class="func-title">番茄钟</span>
+        <span class="func-desc">25 分钟专注循环</span>
+      </span>
+      <span class="func-stat">
+        <span class="v">{{ today_focus }}</span>
+        <span class="l">今日番茄 · 点击开始</span>
+      </span>
+    </a>
+    <a class="func-tile ft-timer" href="{{ url_for('timer.index') }}">
+      <span class="func-ic">{{ ic('timer', 21) }}</span>
+      <span class="func-body"><span class="func-title">计时器</span><span class="func-desc">秒表 · 正向与倒计时</span></span>
+    </a>
+    <a class="func-tile ft-music" href="{{ url_for('music.index') }}">
+      <span class="func-ic">{{ ic('music', 21) }}</span>
+      <span class="func-body"><span class="func-title">背景音乐</span><span class="func-desc">白噪音 · 专注歌单</span></span>
+    </a>
+    <a class="func-tile ft-video" href="{{ url_for('video.index') }}">
+      <span class="func-ic">{{ ic('video', 21) }}</span>
+      <span class="func-body"><span class="func-title">学习视频</span><span class="func-desc">在线播放 · 本地视频</span></span>
+    </a>
+    <a class="func-tile ft-media" href="{{ url_for('media.index') }}">
+      <span class="func-ic">{{ ic('image', 21) }}</span>
+      <span class="func-body"><span class="func-title">媒体库</span><span class="func-desc">图片 · 音视频管理</span></span>
+    </a>
+    <a class="func-tile ft-quiz" href="{{ url_for('questions.quiz') }}">
+      <span class="func-ic">{{ ic('quiz', 21) }}</span>
+      <span class="func-body"><span class="func-title">题库刷题</span><span class="func-desc">随机抽题 · 即时判分</span></span>
+    </a>
+    <a class="func-tile ft-bank" href="{{ url_for('question_bank.index') }}">
+      <span class="func-ic">{{ ic('bank', 21) }}</span>
+      <span class="func-body"><span class="func-title">在线题库</span><span class="func-desc">联网搜题 · 在线收藏</span></span>
+    </a>
+    <a class="func-tile ft-notes" href="{{ url_for('notes.index') }}">
+      <span class="func-ic">{{ ic('markdown', 21) }}</span>
+      <span class="func-body"><span class="func-title">笔记</span><span class="func-desc">文本 · 手写双模式</span></span>
+    </a>
+    <a class="func-tile ft-ocr" href="{{ url_for('ocr.index') }}">
+      <span class="func-ic">{{ ic('ocr', 21) }}</span>
+      <span class="func-body"><span class="func-title">文字识别</span><span class="func-desc">图片 OCR 转文字</span></span>
+    </a>
+    <a class="func-tile ft-forum" href="{{ url_for('forum.index') }}">
+      <span class="func-ic">{{ ic('forum', 21) }}</span>
+      <span class="func-body"><span class="func-title">学习论坛</span><span class="func-desc">提问答疑 · 交流心得</span></span>
+    </a>
+    {% if current_user.is_admin %}
+    <a class="func-tile ft-admin" href="{{ url_for('admin.index') }}">
+      <span class="func-ic">{{ ic('users', 21) }}</span>
+      <span class="func-body"><span class="func-title">管理后台</span><span class="func-desc">用户 · 内容 · 系统管理</span></span>
+    </a>
+    {% endif %}
+    <button type="button" class="func-tile ft-settings" onclick="document.getElementById('btn-settings').click()">
+      <span class="func-ic">{{ ic('gear', 21) }}</span>
+      <span class="func-body"><span class="func-title">设置</span><span class="func-desc">主题 · 字体 · 头像</span></span>
+    </button>
   </div>
-  <div class="kpi-item">
-    <div class="kpi-value">{{ question_count }}</div>
-    <div class="kpi-label">题目总数</div>
-  </div>
-  <div class="kpi-item">
-    <div class="kpi-value">{{ "%.1f"|format(quiz_stats.accuracy) }}%</div>
-    <div class="kpi-label">正确率 · 已答 {{ quiz_stats.total }} 题</div>
-  </div>
-</div>
+</section>
 
-<!-- 双栏：专注趋势 + 答题概况 -->
+{# ===== 底部：专注趋势 + 今日建议 ===== #}
+{% set week_focus = daily_focus | sum(attribute='count') if daily_focus else 0 %}
 <div class="dash-grid">
   <div class="card" style="margin-bottom:0">
-    <div class="card-head"><h2>最近 7 天专注</h2></div>
+    <div class="card-head">
+      <h2>最近 7 天专注</h2>
+      <span class="chart-chip">本周 {{ week_focus }} 个番茄</span>
+    </div>
     <div class="bar-chart">
       {% for item in daily_focus %}
       <div class="bar-col" title="{{ item.day }}：{{ item.count }} 个番茄">
         <div class="bar-track">
-          <div class="bar-fill" style="height: {{ [item.count * 16, 4]|max }}%"
+          <div class="bar-fill{% if loop.last %} bar-today{% endif %}" style="height: {{ [item.count * 16, 4]|max }}%"
                {% if item.count == 0 %}data-empty="1"{% endif %}></div>
         </div>
         <div class="bar-count">{{ item.count }}</div>
@@ -48,83 +134,31 @@
     </div>
   </div>
 
-  <div class="dash-side" style="gap:0">
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-head"><h2>答题概况</h2></div>
-      <div class="stat-grid" style="margin-bottom:0;grid-template-columns:repeat(3,1fr);gap:8px">
-        <div class="stat-card" style="padding:10px 12px">
-          <div class="stat-value">{{ quiz_stats.total }}</div>
-          <div class="stat-label">已答</div>
-        </div>
-        <div class="stat-card" style="padding:10px 12px">
-          <div class="stat-value" style="color:var(--color-success)">{{ quiz_stats.correct }}</div>
-          <div class="stat-label">答对</div>
-        </div>
-        <div class="stat-card" style="padding:10px 12px">
-          <div class="stat-value" style="color:var(--color-danger)">{{ quiz_stats.wrong }}</div>
-          <div class="stat-label">答错</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>今日建议</h2></div>
-      {% if today_focus == 0 %}
-      <p class="muted" style="font-size:13px">今天还没有完成专注，去番茄钟开始第一轮 25 分钟吧。</p>
-      {% else %}
-      <p class="muted" style="font-size:13px">已完成 {{ today_focus }} 轮专注。来几道题巩固一下正确率？</p>
-      {% endif %}
-      <div class="head-actions" style="margin-top:10px">
-        <a href="{{ url_for('questions.quiz') }}" class="btn btn-primary btn-sm">开始刷题</a>
-        <a href="{{ url_for('pomodoro.index') }}" class="btn btn-ghost btn-sm">去番茄钟</a>
-      </div>
+  <div class="card" style="margin-bottom:0">
+    <div class="card-head"><h2>今日建议</h2></div>
+    {% if today_focus == 0 %}
+    <p class="muted" style="font-size:13px">今天还没有完成专注，去番茄钟开始第一轮 25 分钟吧。</p>
+    {% else %}
+    <p class="muted" style="font-size:13px">已完成 {{ today_focus }} 轮专注。来几道题巩固一下正确率？</p>
+    {% endif %}
+    <div class="advice-actions">
+      <a href="{{ url_for('questions.quiz') }}" class="btn btn-primary">开始刷题</a>
+      <a href="{{ url_for('pomodoro.index') }}" class="btn btn-ghost">去番茄钟</a>
+      <a href="{{ url_for('notes.upload') }}" class="btn btn-ghost">记一条笔记</a>
     </div>
   </div>
 </div>
+{% endblock %}
 
-<!-- 快捷入口（一条，贴满宽度） -->
-<div class="quick-strip" style="margin-top:14px">
-  <a class="quick-card" href="{{ url_for('pomodoro.index') }}">
-    <div class="quick-icon quick-icon-1">{{ ic('pomodoro', 22) }}</div>
-    <div class="quick-body">
-      <div class="quick-title">番茄钟</div>
-      <div class="quick-desc">专注 25 分钟，休息 5 分钟</div>
-    </div>
-  </a>
-  <a class="quick-card" href="{{ url_for('timer.index') }}">
-    <div class="quick-icon quick-icon-2">{{ ic('timer', 22) }}</div>
-    <div class="quick-body">
-      <div class="quick-title">计时器</div>
-      <div class="quick-desc">秒表与倒计时</div>
-    </div>
-  </a>
-  <a class="quick-card" href="{{ url_for('music.index') }}">
-    <div class="quick-icon quick-icon-3">{{ ic('music', 22) }}</div>
-    <div class="quick-body">
-      <div class="quick-title">背景音乐</div>
-      <div class="quick-desc">学习时保持专注</div>
-    </div>
-  </a>
-  <a class="quick-card" href="{{ url_for('notes.upload') }}">
-    <div class="quick-icon quick-icon-5">{{ ic('file', 22) }}</div>
-    <div class="quick-body">
-      <div class="quick-title">上传笔记</div>
-      <div class="quick-desc">自动提取文本内容</div>
-    </div>
-  </a>
-  <a class="quick-card" href="{{ url_for('ocr.index') }}">
-    <div class="quick-icon quick-icon-6">{{ ic('ocr', 22) }}</div>
-    <div class="quick-body">
-      <div class="quick-title">文字识别</div>
-      <div class="quick-desc">图片 OCR 转笔记</div>
-    </div>
-  </a>
-  <a class="quick-card" href="{{ url_for('forum.index') }}">
-    <div class="quick-icon quick-icon-4">{{ ic('forum', 22) }}</div>
-    <div class="quick-body">
-      <div class="quick-title">学习论坛</div>
-      <div class="quick-desc">提问答疑、交流心得</div>
-    </div>
-  </a>
-</div>
+{% block scripts %}
+<script>
+  // 问候区日期胶囊（纯展示，无需后端）
+  (function () {
+    var el = document.getElementById("dashDate");
+    if (!el) return;
+    var d = new Date();
+    var wk = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
+    el.textContent = (d.getMonth() + 1) + "月" + d.getDate() + "日 周" + wk;
+  })();
+</script>
 {% endblock %}
